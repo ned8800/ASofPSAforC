@@ -39,20 +39,7 @@ func (gptServerClient *GigaChatServerClient) handleForm(w http.ResponseWriter, r
 		return
 	}
 
-	// Собираем текст вопроса для GPT из формы
-	userMessage := fmt.Sprintf("%s'%s'", GPTUserRequestAnnotationString, req.UserRequest)
-	promptType := GPTDefaultRecordTypeString
-
-	if req.PromptType != "" && req.PromptType != "Другой" {
-		promptType = fmt.Sprintf("\nPrompt type: %s", req.PromptType)
-	}
-
-	// Если есть пример записи, добавляем к запросу
-	if req.ExampleRecord != "" {
-		userMessage = fmt.Sprintf("\nExample: %s. %s", req.ExampleRecord, userMessage)
-	}
-
-	directive := fmt.Sprintf("%s\n%s'%s'", GPTDirectiveString, GPTLibraryRecordTypeString, promptType)
+	directive, userMessage := buildPrompt(req)
 
 	// Запрос в GigaChat
 	chatReq := &gigachat.ChatRequest{
@@ -162,4 +149,25 @@ func main() {
 
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func buildPrompt(req FormRequest) (string, string) {
+	// Собираем текст вопроса для GPT из формы
+	userMessage := fmt.Sprintf("%s'%s'", GPTUserRequestAnnotationString, req.UserRequest)
+	promptType := GPTDefaultRecordTypeString
+
+	if req.PromptType != "" && req.PromptType != "Другой" {
+		promptType = fmt.Sprintf("\nPrompt type: %s", req.PromptType)
+	}
+
+	// Если есть пример записи, добавляем к запросу
+	if req.ExampleRecord != "" {
+		userMessage = fmt.Sprintf("\nExample: %s. %s", req.ExampleRecord, userMessage)
+	} else if example, ok := exampleMap[req.PromptType]; ok {
+		userMessage = fmt.Sprintf("\nExample: %s. %s", example, userMessage)
+	}
+
+	directive := fmt.Sprintf("%s\n%s'%s'", GPTDirectiveString, GPTLibraryRecordTypeString, promptType)
+
+	return directive, userMessage
 }
