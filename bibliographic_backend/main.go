@@ -123,6 +123,23 @@ func formatDateReference(input string) string {
 	return input
 }
 
+type elibraryArticlesJSON struct {
+	Title string `json:"title"`
+	Link  string `json:"link"`
+}
+
+func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
+
+	response := []elibraryArticlesJSON{
+		{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
+		{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+
+}
+
 func main() {
 	// Создаём GigaChat клиент
 	gigaChatServerClient := GigaChatServerClient{
@@ -146,6 +163,8 @@ func main() {
 	})
 
 	r.HandleFunc("/request", gigaChatServerClient.handleForm).Methods(http.MethodPost, http.MethodOptions)
+
+	r.HandleFunc("/search_elibrary", handleElibrarySearch).Methods(http.MethodGet, http.MethodOptions)
 
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
