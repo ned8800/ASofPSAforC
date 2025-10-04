@@ -1,5 +1,5 @@
 // src/components/ReferenceForm.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -14,17 +14,25 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom"; 
 
-function ReferenceForm({ initialRequest = "" }) {
-  const [userRequest, setUserRequest] = useState(initialRequest);
+// ✅ Принимаем initialAnswer вместо initialRequest
+function ReferenceForm({ initialAnswer = "" }) {
+  const [userRequest, setUserRequest] = useState("");
   const [promptType, setPromptType] = useState("");
   const [customType, setCustomType] = useState("");
   const [exampleRecord, setExampleRecord] = useState("");
-  const [answer, setAnswer] = useState("");
+  // ✅ Устанавливаем answer из пропсов
+  const [answer, setAnswer] = useState(initialAnswer); 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Инициализация useNavigate
   const navigate = useNavigate();
+
+  // ✅ Используем useEffect для установки ответа только при монтировании
+  useEffect(() => {
+    if (initialAnswer) {
+      setAnswer(initialAnswer);
+    }
+  }, [initialAnswer]); // Зависимость гарантирует, что ответ установится, если он пришел
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,26 +48,27 @@ function ReferenceForm({ initialRequest = "" }) {
       example_record: exampleRecord || null,
     };
 
+   
     try {
-      const res = await fetch("http://localhost:8080/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+        const res = await fetch("http://localhost:8080/request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
 
-      if (!res.ok) {
-        const text = await res.text();
-        setError(`Ошибка: ${res.status} - ${text}`);
-        setLoading(false);
-        return;
-      }
+        if (!res.ok) {
+            const text = await res.text();
+            setError(`Ошибка: ${res.status} - ${text}`);
+            setLoading(false);
+            return;
+        }
 
-      const data = await res.json();
-      setAnswer(data.answer);
+        const data = await res.json();
+        setAnswer(data.answer); // Обновляем ответ
     } catch (err) {
-      setError("Ошибка сети: " + err.message);
+        setError("Ошибка сети: " + err.message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
@@ -70,15 +79,15 @@ function ReferenceForm({ initialRequest = "" }) {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* ... (Поля формы остаются без изменений) */}
-        
+        {/* ... (Все поля формы) */}
         <TextField
           label="Запрос пользователя"
           value={userRequest}
           onChange={(e) => setUserRequest(e.target.value)}
           required
         />
-        {/* ... (Select и customType TextField) */}
+        {/* ... (Select, customType TextField, exampleRecord TextField) */}
+        
         <FormControl fullWidth>
           <InputLabel>Выбрать тип записи (или оставить по умолчанию)</InputLabel>
           <Select
@@ -117,18 +126,17 @@ function ReferenceForm({ initialRequest = "" }) {
           Отправить
         </Button>
         
-        {/* Измененная кнопка с useNavigate и отступом сверху */}
         <Button 
           variant="outlined" 
           size="large"
-          onClick={() => navigate("/search")} // Используем navigate
-          sx={{ mt: 1 }} // Добавляем отступ сверху (mt: 1)
+          onClick={() => navigate("/search")}
+          sx={{ mt: 1 }}
         >
           Найти статьи в e-library
         </Button>
       </Box>
 
-      {/* ... (Loading, error, answer остаются без изменений) */}
+      {/* ✅ Этот блок теперь будет отображать ответ, переданный из ArticleSearch */}
       {loading && <CircularProgress sx={{ mt: 3 }} />}
       {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
       {answer && (
@@ -144,4 +152,6 @@ function ReferenceForm({ initialRequest = "" }) {
     </Container>
   );
 }
+
 export default ReferenceForm;
+

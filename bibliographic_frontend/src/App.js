@@ -4,24 +4,24 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import ReferenceForm from "./components/ReferenceForm";
 import ArticleSearch from "./components/ArticleSearch";
 
-// Обертка для ReferenceForm, чтобы получить данные из роута
 function HomeWrapper() {
   const location = useLocation();
-  const initialRequest = location.state?.initialRequest || "";
-  return <ReferenceForm initialRequest={initialRequest} />;
+  // ✅ Извлекаем initialAnswer из state
+  const initialAnswer = location.state?.initialAnswer || ""; 
+  
+  // ✅ Передаем initialAnswer в ReferenceForm
+  return <ReferenceForm initialAnswer={initialAnswer} />; 
 }
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Главная страница: форма */}
         <Route path="/" element={<HomeWrapper />} /> 
-        
-        {/* Страница поиска статей */}
         <Route path="/search" element={<ArticleSearch />} />
       </Routes>
     </Router>
   );
 }
+
 export default App;
