@@ -22,4 +22,36 @@ const (
 	GPTLibraryRecordTypeString     = `Тип библиографической записи = `
 	GPTDefaultRecordTypeString     = `выбери самостоятельно в соответствии с входными данными`
 	GPTUserRequestAnnotationString = `Вот входные данные, из которых ты должен составить библиографическую запись источника информации Input Data: `
+
+	TypeBook              = "Книга"
+	TypeInternet          = "Интернет-ресурс"
+	TypeLaw               = "Закон, нормативный акт и т.п."
+	TypeDissertation      = "Диссертация"
+	TypeAbstract          = "Автореферат"
+	TypeJournalArticle    = "Статья из журнала"
+	TypeCollectionArticle = "Статья из сборника"
+	TypeNewspaperArticle  = "Статья из газеты"
+	TypeOther             = "Другой"
+
+	ExampleBook              = `Иванов И. И. Основы теории информации: учебник. — Москва: Наука, 2020. — 350 с.`
+	ExampleInternet          = `Федеральная служба государственной статистики. Демографический ежегодник России, 2022 [Электронный ресурс]. — URL: https://rosstat.gov.ru/folder/210/document/13207 (дата обращения: 04.10.2025).`
+	ExampleLaw               = `Гражданский кодекс Российской Федерации (часть первая): федер. закон от 30.11.1994 № 51-ФЗ: ред. от 01.07.2021 // Собрание законодательства РФ. — 1994. — № 32. — Ст. 3301.`
+	ExampleDissertation      = `Петрова А. С. Методы анализа больших данных в экономике: дис. … канд. экон. наук. — Москва, 2021. — 180 с.`
+	ExampleAbstract          = `Сидоров В. Н. Интеллектуальные системы поддержки принятия решений: автореф. дис. … д-ра техн. наук. — Санкт-Петербург, 2019. — 48 с.`
+	ExampleJournalArticle    = `Кузнецов М. П. Новые подходы к машинному обучению // Вестник Московского университета. Серия 1. Математика. — 2021. — Т. 76, № 4. — С. 12–25.`
+	ExampleCollectionArticle = `Алексеева Л. Г. Роль цифровых технологий в образовании // Цифровое будущее науки и образования: материалы Междунар. конф. — Екатеринбург: УрФУ, 2020. — С. 55–60.`
+	ExampleNewspaperArticle  = `Иванов С. В. Наука в современном обществе // Российская газета. — 2021. — 15 марта. — С. 7.`
+	ExampleOther             = `ГОСТ Р 7.0.100-2018. Библиографическая запись. Библиографическое описание. Общие требования и правила составления. — Москва: Стандартинформ, 2019.`
 )
+
+var exampleMap = map[string]string{
+	TypeBook:              ExampleBook,
+	TypeInternet:          ExampleInternet,
+	TypeLaw:               ExampleLaw,
+	TypeDissertation:      ExampleDissertation,
+	TypeAbstract:          ExampleAbstract,
+	TypeJournalArticle:    ExampleJournalArticle,
+	TypeCollectionArticle: ExampleCollectionArticle,
+	TypeNewspaperArticle:  ExampleNewspaperArticle,
+	TypeOther:             ExampleOther,
+}

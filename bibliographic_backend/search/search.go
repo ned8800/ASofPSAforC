@@ -100,7 +100,7 @@ func Search(title string) ([]string, error) {
 		}
 
 		htmlContent := string(bodyBytes)
-		result, err := ExtractRefDiv(htmlContent)
+		result, err := extractRefDiv(htmlContent)
 		if err != nil {
 			log.Printf("Ошибка извлечения контента: %v\n", err)
 			return references, err
@@ -156,7 +156,7 @@ func RandElibraryNumber() string {
 	return strconv.FormatFloat(randomNumber, 'f', 17, 64)
 }
 
-func ExtractRefDiv(htmlContent string) (string, error) {
+func extractRefDiv(htmlContent string) (string, error) {
 	// Парсим HTML
 	doc, err := html.Parse(strings.NewReader(htmlContent))
 	if err != nil {
