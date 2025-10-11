@@ -131,12 +131,21 @@ type elibraryArticlesJSON struct {
 
 func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 
-	articles := search.Search("марковские+процессы")
+	params := r.URL.Query()
+	query := params.Get("query")
+
+	articles, err := search.Search(query)
+	if err != nil {
+        log.Printf("Ошибка при выполнении запроса: %v \n", err)
+        return
+    }
 
 	// response := []elibraryArticlesJSON{
 	// 	{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
 	// 	{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
 	// }
+
+
 
 	var response []elibraryArticlesJSON
 
