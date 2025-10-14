@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	search "bibliographic_litriture_gigachat/search"
 
 	gigachat "github.com/evgensoft/gigachat"
 	"github.com/gorilla/mux"
@@ -130,10 +131,31 @@ type elibraryArticlesJSON struct {
 
 func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 
-	response := []elibraryArticlesJSON{
-		{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
-		{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
-	}
+	params := r.URL.Query()
+	query := params.Get("query")
+
+	articles, err := search.Search(query)
+	if err != nil {
+        log.Printf("Ошибка при выполнении запроса: %v \n", err)
+        return
+    }
+
+	// response := []elibraryArticlesJSON{
+	// 	{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
+	// 	{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
+	// }
+
+
+
+	var response []elibraryArticlesJSON
+
+	for link, title := range articles {
+        article := elibraryArticlesJSON{
+            Title: title,
+            Link:  link,
+        }
+        response = append(response, article)
+    }
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
