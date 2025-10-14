@@ -23,7 +23,7 @@
     <a href="https://d3js.org/"><img alt="D3.js & React Force Graph" src="https://img.shields.io/badge/D3.js_&_React_Force_Graph-VIS-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white"></a>
   </p>
 
-  <h3>Backend Технологии</h3>
+  <h3>Backend Технологии </h3>
   <p>
     <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white"></a>
     <a href="https://www.djangoproject.com/"><img alt="Django" src="https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django&logoColor=white"></a>
