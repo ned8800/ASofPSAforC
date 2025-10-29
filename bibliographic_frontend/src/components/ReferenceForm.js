@@ -5,33 +5,36 @@ import {
   Typography,
   TextField,
   Button,
-  Select,
+  Select, // Этот импорт больше не нужен, если мы полностью перешли на TextField
   MenuItem,
-  FormControl,
-  InputLabel,
+  FormControl, // Этот импорт больше не нужен
+  InputLabel, // Этот импорт больше не нужен
   CircularProgress,
   Box,
+  // ✅ Новые импорты для подсказок
+  Tooltip,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+// ✅ Импорт иконки
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom"; 
 
-// ✅ Принимаем initialAnswer вместо initialRequest
 function ReferenceForm({ initialAnswer = "" }) {
   const [userRequest, setUserRequest] = useState("");
   const [promptType, setPromptType] = useState("");
   const [customType, setCustomType] = useState("");
   const [exampleRecord, setExampleRecord] = useState("");
-  // ✅ Устанавливаем answer из пропсов
   const [answer, setAnswer] = useState(initialAnswer); 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Используем useEffect для установки ответа только при монтировании
   useEffect(() => {
     if (initialAnswer) {
       setAnswer(initialAnswer);
     }
-  }, [initialAnswer]); // Зависимость гарантирует, что ответ установится, если он пришел
+  }, [initialAnswer]); 
 
 
   const handleSubmit = async (e) => {
@@ -64,7 +67,7 @@ function ReferenceForm({ initialAnswer = "" }) {
         }
 
         const data = await res.json();
-        setAnswer(data.answer); // Обновляем ответ
+        setAnswer(data.answer); 
     } catch (err) {
         setError("Ошибка сети: " + err.message);
     } finally {
@@ -79,40 +82,78 @@ function ReferenceForm({ initialAnswer = "" }) {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* ... (Все поля формы) */}
+        
         <TextField
           label="Запрос пользователя"
           value={userRequest}
           onChange={(e) => setUserRequest(e.target.value)}
           required
+          // ✅ Добавляем подсказку
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Введите информацию об источнике (например: 'статья иванова и и в журнале вестник науки')">
+                  <IconButton edge="end">
+                    <InfoOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
         />
-        {/* ... (Select, customType TextField, exampleRecord TextField) */}
         
-        <FormControl fullWidth>
-          <InputLabel>Выбрать тип записи (или оставить по умолчанию)</InputLabel>
-          <Select
-            value={promptType}
-            label="Выбрать тип записи (или оставить по умолчанию)"
-            onChange={(e) => setPromptType(e.target.value)}
-          >
-            <MenuItem value=""><em>-- Выберите тип --</em></MenuItem>
-            <MenuItem value="Книга">Книга</MenuItem>
-            <MenuItem value="Интернет-ресурс">Интернет-ресурс</MenuItem>
-            <MenuItem value="Закон, нормативный акт и т.п.">Закон, нормативный акт и т.п.</MenuItem>
-            <MenuItem value="Диссертация">Диссертация</MenuItem>
-            <MenuItem value="Автореферат">Автореферат</MenuItem>
-            <MenuItem value="Статья из журнала">Статья из журнала</MenuItem>
-            <MenuItem value="Статья из сборника">Статья из сборника</MenuItem>
-            <MenuItem value="Статья из газеты">Статья из газеты</MenuItem>
-            <MenuItem value="Другой">Другой</MenuItem>
-          </Select>
-        </FormControl>
+        {/* ✅ Заменяем FormControl/Select на TextField select для простоты добавления иконки */}
+        <TextField
+          select
+          fullWidth
+          label="Выбрать тип записи (или оставить по умолчанию)"
+          value={promptType}
+          onChange={(e) => setPromptType(e.target.value)}
+          // ✅ Добавляем подсказку
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования.">
+                  {/* Оборачиваем IconButton в Box, чтобы он не перекрывал стрелку Select */}
+                  <Box sx={{ mr: 2 }}> 
+                    <IconButton edge="end">
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
+        >
+          <MenuItem value=""><em>-- Выберите тип --</em></MenuItem>
+          <MenuItem value="Книга">Книга</MenuItem>
+          <MenuItem value="Интернет-ресурс">Интернет-ресурс</MenuItem>
+          <MenuItem value="Закон, нормативный акт и т.п.">Закон, нормативный акт и т.п.</MenuItem>
+          <MenuItem value="Диссертация">Диссертация</MenuItem>
+          <MenuItem value="Автореферат">Автореферат</MenuItem>
+          <MenuItem value="Статья из журнала">Статья из журнала</MenuItem>
+          <MenuItem value="Статья из сборника">Статья из сборника</MenuItem>
+          <MenuItem value="Статья из газеты">Статья из газеты</MenuItem>
+          <MenuItem value="Другой">Другой</MenuItem>
+        </TextField>
 
         {promptType === "Другой" && (
           <TextField
             label="Указать свой тип записи"
             value={customType}
             onChange={(e) => setCustomType(e.target.value)}
+            // ✅ Добавляем подсказку
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip title="Введите свой собственный тип источника, если его нет в списке.">
+                    <IconButton edge="end">
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ),
+            }}
           />
         )}
 
@@ -120,6 +161,18 @@ function ReferenceForm({ initialAnswer = "" }) {
           label="Указать определенный формат записи (или оставить пустым по умолчанию)"
           value={exampleRecord}
           onChange={(e) => setExampleRecord(e.target.value)}
+          // ✅ Добавляем подсказку
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
+                  <IconButton edge="end">
+                    <InfoOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
         />
 
         <Button type="submit" variant="contained" size="large">
@@ -136,7 +189,7 @@ function ReferenceForm({ initialAnswer = "" }) {
         </Button>
       </Box>
 
-      {/* ✅ Этот блок теперь будет отображать ответ, переданный из ArticleSearch */}
+      {/* Блок вывода ответа */}
       {loading && <CircularProgress sx={{ mt: 3 }} />}
       {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
       {answer && (
@@ -154,4 +207,3 @@ function ReferenceForm({ initialAnswer = "" }) {
 }
 
 export default ReferenceForm;
-

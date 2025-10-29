@@ -1,6 +1,8 @@
 module bibliographic_litriture_gigachat
 
-go 1.25.1
+go 1.24.0
+
+toolchain go1.24.9
 
 require (
 	github.com/evgensoft/gigachat v0.0.0-20250409142046-9633e2b5f6a4
