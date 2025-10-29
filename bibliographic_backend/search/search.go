@@ -18,7 +18,7 @@ import (
 
 const MaxIDsToProcess = 5
 
-func SearchElibrary(title string) (map[string]string, error) {
+func Search(title string) (map[string]string, error) {
 
 	queryParams := url.Values{}
 	queryParams.Set("where_fulltext", "on")
@@ -145,6 +145,7 @@ func extractIDs(htmlContent string) ([]string, error) {
 }
 
 func RandElibraryNumber() string {
+	// Генерация случайного числа float64 в диапазоне [0.0, 1.0)
 	randomNumber := rand.Float64()
 	return strconv.FormatFloat(randomNumber, 'f', 17, 64)
 }
