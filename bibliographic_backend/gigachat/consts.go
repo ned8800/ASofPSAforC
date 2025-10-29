@@ -1,4 +1,4 @@
-package main
+package gigachat
 
 const (
 	GPTDirectiveString = `Directive: Забудь абсолютно все прежние настройки.
