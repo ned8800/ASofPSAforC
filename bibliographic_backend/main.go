@@ -1,6 +1,7 @@
 package main
 
 import (
+	search "bibliographic_litriture_gigachat/search"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,7 +10,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	search "bibliographic_litriture_gigachat/search"
 
 	gigachat "github.com/evgensoft/gigachat"
 	"github.com/gorilla/mux"
@@ -134,28 +134,39 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	query := params.Get("query")
 
-	articles, err := search.Search(query)
+	articles, err := search.SearchElibrary(query)
 	if err != nil {
-        log.Printf("Ошибка при выполнении запроса: %v \n", err)
-        return
-    }
+		log.Printf("Ошибка при выполнении запроса: %v \n", err)
+		//return
+	}
+
+	articles2, err := search.SearchGoogleScholar(query)
+	if err != nil {
+		log.Printf("Ошибка при выполнении запроса: %v \n", err)
+		//return
+	}
 
 	// response := []elibraryArticlesJSON{
 	// 	{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
 	// 	{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
 	// }
 
-
-
 	var response []elibraryArticlesJSON
 
 	for link, title := range articles {
-        article := elibraryArticlesJSON{
-            Title: title,
-            Link:  link,
-        }
-        response = append(response, article)
-    }
+		article := elibraryArticlesJSON{
+			Title: title,
+			Link:  link,
+		}
+		response = append(response, article)
+	}
+	for link, title := range articles2 {
+		article := elibraryArticlesJSON{
+			Title: title,
+			Link:  link,
+		}
+		response = append(response, article)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
