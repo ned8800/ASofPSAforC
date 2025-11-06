@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bibliographic_litriture_gigachat/bot"
 	gigachatService "bibliographic_litriture_gigachat/gigachat"
 	search "bibliographic_litriture_gigachat/search"
 
@@ -35,11 +34,6 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 		//return
 	}
 
-	// response := []elibraryArticlesJSON{
-	// 	{Title: "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
-	// 	{Title: "Иванов, И. И. Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005.", Link: "localhost/3000"},
-	// }
-
 	var response []elibraryArticlesJSON
 
 	for link, title := range articles {
@@ -67,15 +61,15 @@ func main() {
 
 	gigaChatService := gigachatService.New(gigachatClient)
 
-	b, err := bot.New(gigaChatService)
-	if err != nil {
-		log.Fatalf("bot.New: %s", err)
-	}
+	// b, err := bot.New(gigaChatService)
+	// if err != nil {
+	// 	log.Fatalf("bot.New: %s", err)
+	// }
 
-	err = b.Start()
-	if err != nil {
-		log.Fatalf("failed to start bot: %s", err)
-	}
+	// err = b.Start()
+	// if err != nil {
+	// 	log.Fatalf("failed to start bot: %s", err)
+	// }
 
 	r := mux.NewRouter()
 

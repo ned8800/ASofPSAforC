@@ -1,22 +1,16 @@
-// src/components/ReferenceForm.js
 import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
   TextField,
   Button,
-  Select, // Этот импорт больше не нужен, если мы полностью перешли на TextField
   MenuItem,
-  FormControl, // Этот импорт больше не нужен
-  InputLabel, // Этот импорт больше не нужен
   CircularProgress,
   Box,
-  // ✅ Новые импорты для подсказок
   Tooltip,
   IconButton,
   InputAdornment,
 } from "@mui/material";
-// ✅ Импорт иконки
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom"; 
 
@@ -78,7 +72,7 @@ function ReferenceForm({ initialAnswer = "" }) {
   return (
     <Container maxWidth="sm" sx={{ mt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="h4" gutterBottom align="center">
-        Составление библиографической записи
+        Составление библиографической ссылки
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
