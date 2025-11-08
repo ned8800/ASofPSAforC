@@ -68,11 +68,15 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	}
 
-	response, err := s.IdentifyTypes(unformedLinks)
+	var response FormResponse
+
+	responseStrings, err := s.IdentifyTypes(unformedLinks)
 	if err != nil {
 		http.Error(w, "failed to send request to gptServer", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 	}
+
+	response.Answer = strings.Join(responseStrings, "\n")
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
@@ -243,11 +247,12 @@ func (s *Service) SendPromptRequest(directive string, userMessage string) ([]str
 }
 
 func buildTypePrompt(unformedLinks []string) (string, string) {
-	userMessage := GPTUserTypeRequestAnnotationString + "'"
-	for _, str := range unformedLinks {
-		userMessage += (str + "\n ")
+	userMessage := fmt.Sprintf("%s %d. %s'", GPTUserTypeRequestAnnotationCountTotal, len(unformedLinks), GPTUserTypeRequestAnnotationString)
+	rawLinks := make([]string, len(unformedLinks))
+	for _, unformedStr := range unformedLinks {
+		rawLinks = append(rawLinks, strings.TrimSpace(unformedStr))
 	}
-	userMessage += "'"
+	userMessage += strings.Join(rawLinks, ";\n") + "'"
 
 	directive := GPTTypeDirectiveString
 

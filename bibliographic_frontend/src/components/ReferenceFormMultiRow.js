@@ -49,7 +49,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
 
    
     try {
-        const res = await fetch("http://localhost:8080/request", {
+        const res = await fetch("http://localhost:8080/requestMultyRow", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),

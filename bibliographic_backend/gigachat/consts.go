@@ -57,8 +57,8 @@ const (
 Каждый полученный тип записи пиши на новой строке и разделяй символом ';' в соответствии с порядком появления записи.
 Ответ предоставь на русском языке.
 `
-
-	GPTUserTypeRequestAnnotationString = "\nInput Data: "
+	GPTUserTypeRequestAnnotationCountTotal = "Строк в ответе должно быть столько же, сколько количество ссылок в входных данных = "
+	GPTUserTypeRequestAnnotationString     = "\nInput Data: "
 )
 
 var exampleMap = map[string]string{

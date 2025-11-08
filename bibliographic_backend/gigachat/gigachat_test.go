@@ -32,7 +32,11 @@ func TestSendPromptRequestGigachat(t *testing.T) {
 
 		directive, userMessage := buildTypePrompt(unformedLinks)
 
+		fmt.Printf("directive, userMessage are: '%v'\n '%v'\n", directive, userMessage)
+
 		types, err := gigaChatService.SendPromptRequest(directive, userMessage)
+
+		fmt.Printf("raw types are: '%v'\n", types)
 
 		assert.NoError(t, err, "gptServerClient.SendRequest should not return an error")
 

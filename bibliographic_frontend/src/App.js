@@ -33,6 +33,7 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import ReferenceForm from './components/ReferenceForm'; // Ваша старая форма
 import ReferenceFormMultiRow from './components/ReferenceFormMultiRow'; // Ваша новая форма
+import ArticleSearch from "./components/ArticleSearch";
 
 // Вам также нужно импортировать ArticleSearch, если он на /search
 // import ArticleSearch from './components/ArticleSearch'; 

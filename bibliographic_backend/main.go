@@ -98,6 +98,8 @@ func main() {
 
 	r.HandleFunc("/search_elibrary", handleElibrarySearch).Methods(http.MethodGet, http.MethodOptions)
 
+	r.HandleFunc("/requestMultyRow", gigaChatService.HandleFormMultyRow).Methods(http.MethodPost, http.MethodOptions)
+
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
