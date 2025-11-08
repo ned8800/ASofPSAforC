@@ -52,6 +52,32 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
+	var req FormRequest
+
+	// Парсим входной JSON
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid JSON", http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+
+	unformedLinks := []string{
+		`IEEE/ISO/IEC 26515-2018 "International Standard – Systems and software engineering – Developing information for users in an agile environment". – URL: https://standards.ieee.org/ieee/1363/6936/ (дата обращения: 25.09.2025).`,
+		`Федеральное агентство по техническому регулированию и метрологии. ГОСТ Р ИСО/МЭК 12207–2010 «Процессы жизненного цикла программных средств». – Москва: Стандартинформ, 2011. – 105 с.`,
+		`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
+	}
+
+	response, err := s.IdentifyTypes(unformedLinks)
+	if err != nil {
+		http.Error(w, "failed to send request to gptServer", http.StatusInternalServerError)
+		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {
 	directive, userMessage := buildPrompt(req)
 
@@ -158,13 +184,14 @@ func buildPrompt(req FormRequest) (string, string) {
 
 //task13--------------------------------------------------------------------------------------------
 
-func (s *Service) IdentifyTypes(unformedLinks []string) []string {
+func (s *Service) IdentifyTypes(unformedLinks []string) ([]string, error) {
 	directive, userMessage := buildTypePrompt(unformedLinks)
 	types, err := s.SendPromptRequest(directive, userMessage)
 	if err != nil {
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+		return nil, err
 	}
-	return types
+	return types, nil
 }
 
 func (s *Service) SendPromptRequest(directive string, userMessage string) ([]string, error) {
@@ -173,13 +200,13 @@ func (s *Service) SendPromptRequest(directive string, userMessage string) ([]str
 	chatReq := &gigachat.ChatRequest{
 		Model: gigachat.ModelGigaChat,
 		Messages: []gigachat.Message{
-			{
-				Role:    gigachat.RoleSystem,
-				Content: directive,
-			},
+			// {
+			// 	Role:    gigachat.RoleSystem,
+			// 	Content: directive,
+			// },
 			{
 				Role:    gigachat.RoleUser,
-				Content: userMessage,
+				Content: directive + userMessage,
 			},
 		},
 	}
@@ -196,9 +223,21 @@ func (s *Service) SendPromptRequest(directive string, userMessage string) ([]str
 	}
 
 	for _, choice := range resp.Choices {
-		response.Answer += choice.Message.Content
+		response.Answer += strings.TrimSpace(choice.Message.Content)
 	}
-	result := strings.Split(response.Answer, ";")
+
+	// Разделение строки по ";"
+	parts := strings.Split(response.Answer, ";")
+
+	// Очистка каждого элемента от пробелов
+	result := make([]string, len(parts))
+	for i, part := range parts {
+		result[i] = strings.TrimSpace(part)
+	}
+
+	fmt.Println("response.Answer and result are:")
+	fmt.Println(response.Answer)
+	fmt.Println(result)
 
 	return result, nil
 }
@@ -206,7 +245,7 @@ func (s *Service) SendPromptRequest(directive string, userMessage string) ([]str
 func buildTypePrompt(unformedLinks []string) (string, string) {
 	userMessage := GPTUserTypeRequestAnnotationString + "'"
 	for _, str := range unformedLinks {
-		userMessage += (str + "; ")
+		userMessage += (str + "\n ")
 	}
 	userMessage += "'"
 
@@ -232,3 +271,57 @@ func (s *Service) SendMultipleRequest(unformedLinks []string, types []string) (s
 	}
 	return result, nil
 }
+
+// // GetToken получает токен доступа
+// func (s *Service) ResetChat() error {
+// 	dataScope := fmt.Sprintf("scope=%s", gigachat.ScopePersonal)
+
+// 	// Создаем запрос
+// 	httpReq, err := http.NewRequest("POST", fmt.Sprintf("%s/reset", baseURLToken), bytes.NewBufferString(dataScope))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("ошибка создания запроса: %w", err)
+// 	}
+
+// 	// Устанавливаем заголовки
+// 	httpReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+// 	httpReq.Header.Set("Accept", "application/json")
+// 	httpReq.Header.Set("Authorization", c.basicAuth)
+// 	httpReq.Header.Set("RqUID", generateUUID())
+
+// 	// Отправляем запрос
+// 	resp, err := c.httpClient.Do(httpReq)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("ошибка отправки запроса: %w", err)
+// 	}
+// 	defer resp.Body.Close()
+
+// 	// Читаем тело ответа
+// 	body, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("ошибка чтения ответа: %w", err)
+// 	}
+
+// 	// Проверяем статус ответа
+// 	if resp.StatusCode != http.StatusOK {
+// 		var errResp ErrorResponse
+// 		if err := json.Unmarshal(body, &errResp); err != nil {
+// 			return nil, fmt.Errorf("ошибка разбора ответа об ошибке: %w", err)
+// 		}
+// 		return nil, &APIError{
+// 			Code:    errResp.Code,
+// 			Message: errResp.Message,
+// 		}
+// 	}
+
+// 	// Разбираем успешный ответ
+// 	var tokenResp TokenResponse
+// 	if err := json.Unmarshal(body, &tokenResp); err != nil {
+// 		return nil, fmt.Errorf("ошибка разбора ответа: %w", err)
+// 	}
+
+// 	// Сохраняем токен и время его истечения
+// 	c.token = &tokenResp
+// 	c.tokenExpiry = time.Unix(tokenResp.ExpiresAt/1000-60, 0)
+
+// 	return &tokenResp, nil
+// }

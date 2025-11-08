@@ -7,7 +7,14 @@ toolchain go1.24.9
 require (
 	github.com/evgensoft/gigachat v0.0.0-20250409142046-9633e2b5f6a4
 	github.com/gorilla/mux v1.8.1
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.44.0
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
