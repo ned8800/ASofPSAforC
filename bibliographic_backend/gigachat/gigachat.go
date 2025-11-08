@@ -154,3 +154,60 @@ func buildPrompt(req FormRequest) (string, string) {
 
 	return directive, userMessage
 }
+
+//task13--------------------------------------------------------------------------------------------
+
+func (s *Service) IdentifyTypes(unformedLinks []string) []string {
+	directive, userMessage := buildTypePrompt(unformedLinks)
+	types, err := s.SendPromptRequest(directive, userMessage)
+	if err != nil {
+		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+	}
+	return types
+}
+
+func (s *Service) SendPromptRequest(directive string, userMessage string) ([]string, error) {
+
+	// fmt.Println("directive:", directive)
+	// fmt.Println("usermessage: ", userMessage)
+	// Запрос в GigaChat
+	chatReq := &gigachat.ChatRequest{
+		Model: gigachat.ModelGigaChat,
+		Messages: []gigachat.Message{
+			{
+				Role:    gigachat.RoleSystem,
+				Content: directive,
+			},
+			{
+				Role:    gigachat.RoleUser,
+				Content: userMessage,
+			},
+		},
+	}
+
+	// Отправляем запрос
+	resp, err := s.Client.Chat(chatReq)
+	if err != nil {
+		return nil, fmt.Errorf("s.Client.Chat: %w", err)
+	}
+
+	// Формируем ответ
+	result := []string{}
+	for _, choice := range resp.Choices {
+		result = append(result, choice.Message.Content)
+	}
+
+	return result, nil
+}
+
+func buildTypePrompt(unformedLinks []string) (string, string) {
+	userMessage := GPTUserTypeRequestAnnotationString + "'"
+	for _, str := range unformedLinks {
+		userMessage += (str + "; ")
+	}
+	userMessage += "'"
+
+	directive := GPTTypeDirectiveString
+
+	return directive, userMessage
+}

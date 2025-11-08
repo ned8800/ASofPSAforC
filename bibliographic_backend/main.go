@@ -3,6 +3,7 @@ package main
 import (
 	gigachatService "bibliographic_litriture_gigachat/gigachat"
 	search "bibliographic_litriture_gigachat/search"
+	"fmt"
 
 	"encoding/json"
 	"log"
@@ -60,6 +61,12 @@ func main() {
 	gigachatClient := gigachat.NewClient(os.Getenv("GIGACHAT_CLIENT_ID"), os.Getenv("GIGACHAT_CLIENT_SECRET"))
 
 	gigaChatService := gigachatService.New(gigachatClient)
+
+	exampleStrings := []string{"Введение в философию. М-: Политиздат, 2009.- Т. 2. -243 с. ",
+		"Характеристика философии нового времени (XVI-ХVIII) Ее основные направления и виднейшие представители (Бэкон, Декарт, Гоббс, Локк, Спиноза, Лейбниц, Беркли, Юм)",
+		"Material UI, официальный сайт.",
+		"Habr. Как написать идеальный запрос для ChatGPT."}
+	fmt.Println(gigaChatService.IdentifyTypes(exampleStrings))
 
 	// b, err := bot.New(gigaChatService)
 	// if err != nil {
