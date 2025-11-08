@@ -61,6 +61,12 @@ func main() {
 
 	gigaChatService := gigachatService.New(gigachatClient)
 
+	// exampleStrings := []string{"Введение в философию. М-: Политиздат, 2009.- Т. 2. -243 с. ",
+	// 	"Сартр Ж.-П. Размышления о еврейском вопросе. – Париж: Галлимар, 1952.",
+	// 	"Material UI, официальный сайт.",
+	// 	"Habr. Как написать идеальный запрос для ChatGPT."}
+	// fmt.Println(gigaChatService.IdentifyTypes(exampleStrings))
+
 	// b, err := bot.New(gigaChatService)
 	// if err != nil {
 	// 	log.Fatalf("bot.New: %s", err)

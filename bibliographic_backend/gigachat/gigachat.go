@@ -168,8 +168,6 @@ func (s *Service) IdentifyTypes(unformedLinks []string) []string {
 
 func (s *Service) SendPromptRequest(directive string, userMessage string) ([]string, error) {
 
-	// fmt.Println("directive:", directive)
-	// fmt.Println("usermessage: ", userMessage)
 	// Запрос в GigaChat
 	chatReq := &gigachat.ChatRequest{
 		Model: gigachat.ModelGigaChat,
@@ -192,10 +190,14 @@ func (s *Service) SendPromptRequest(directive string, userMessage string) ([]str
 	}
 
 	// Формируем ответ
-	result := []string{}
-	for _, choice := range resp.Choices {
-		result = append(result, choice.Message.Content)
+	response := FormResponse{
+		Answer: "",
 	}
+
+	for _, choice := range resp.Choices {
+		response.Answer += choice.Message.Content
+	}
+	result := strings.Split(response.Answer, ";")
 
 	return result, nil
 }
