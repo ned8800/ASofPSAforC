@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -212,4 +213,22 @@ func buildTypePrompt(unformedLinks []string) (string, string) {
 	directive := GPTTypeDirectiveString
 
 	return directive, userMessage
+}
+
+//task14 вариант с кучей промптов, исправить потом
+
+func (s *Service) SendMultipleRequest(unformedLinks []string, types []string) (string, error) {
+	result := ""
+	for i, link := range unformedLinks {
+		req := FormRequest{
+			UserRequest: link,
+			PromptType:  types[i],
+		}
+		resp, err := s.SendRequest(req)
+		if err != nil {
+			return "nil", fmt.Errorf("s.Client.Chat: %w", err)
+		}
+		result += (strconv.Itoa(i+1) + ". " + strings.TrimPrefix(resp.Answer, "Библиографическая запись:\n"))
+	}
+	return result, nil
 }

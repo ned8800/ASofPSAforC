@@ -65,7 +65,8 @@ func main() {
 	// 	"Сартр Ж.-П. Размышления о еврейском вопросе. – Париж: Галлимар, 1952.",
 	// 	"Material UI, официальный сайт.",
 	// 	"Habr. Как написать идеальный запрос для ChatGPT."}
-	// fmt.Println(gigaChatService.IdentifyTypes(exampleStrings))
+	// exampleTypes := gigaChatService.IdentifyTypes(exampleStrings)
+	// fmt.Println(gigaChatService.SendMultipleRequest(exampleStrings, exampleTypes))
 
 	// b, err := bot.New(gigaChatService)
 	// if err != nil {
