@@ -70,6 +70,7 @@ func main() {
 	// if err != nil {
 	// 	log.Fatalf("failed to start bot: %s", err)
 	// }
+	// d
 
 	r := mux.NewRouter()
 
