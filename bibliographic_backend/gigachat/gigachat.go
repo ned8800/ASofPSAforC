@@ -62,24 +62,39 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unformedLinks := []string{
-		`IEEE/ISO/IEC 26515-2018 "International Standard – Systems and software engineering – Developing information for users in an agile environment". – URL: https://standards.ieee.org/ieee/1363/6936/ (дата обращения: 25.09.2025).`,
-		`Федеральное агентство по техническому регулированию и метрологии. ГОСТ Р ИСО/МЭК 12207–2010 «Процессы жизненного цикла программных средств». – Москва: Стандартинформ, 2011. – 105 с.`,
-		`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
-	}
+	incomingData := req.UserRequest
+
+	unformedLinks := splitText(incomingData)
+
+	// unformedLinks := []string{
+	// 	`IEEE/ISO/IEC 26515-2018 "International Standard – Systems and software engineering – Developing information for users in an agile environment". – URL: https://standards.ieee.org/ieee/1363/6936/ (дата обращения: 25.09.2025).`,
+	// 	`Федеральное агентство по техническому регулированию и метрологии. ГОСТ Р ИСО/МЭК 12207–2010 «Процессы жизненного цикла программных средств». – Москва: Стандартинформ, 2011. – 105 с.`,
+	// 	`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
+	// }
 
 	var response FormResponse
 
-	responseStrings, err := s.IdentifyTypes(unformedLinks)
+	typeStrings, err := s.IdentifyTypes(unformedLinks)
 	if err != nil {
-		http.Error(w, "failed to send request to gptServer", http.StatusInternalServerError)
+		http.Error(w, "failed to send type request to gptServer", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 	}
 
-	response.Answer = strings.Join(responseStrings, "\n")
+	responseStrings, err := s.SendMultipleRequest(unformedLinks, typeStrings)
+	if err != nil {
+		http.Error(w, "failed to send multiple format request to gptServer", http.StatusInternalServerError)
+		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+	}
+
+	response.Answer = responseStrings
+	//response.Answer = strings.Join(responseStrings, "\n")
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func splitText(text string) []string {
+	return strings.Split(text, "\n")
 }
 
 func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {
