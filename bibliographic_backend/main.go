@@ -3,7 +3,6 @@ package main
 import (
 	gigachatService "bibliographic_litriture_gigachat/gigachat"
 	search "bibliographic_litriture_gigachat/search"
-	"strings"
 
 	"encoding/json"
 	"log"
@@ -103,8 +102,4 @@ func main() {
 
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
-}
-
-func splitText(text string) []string {
-	return strings.Split(text, "\n")
 }
