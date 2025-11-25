@@ -2,8 +2,6 @@ package search
 
 import (
 	"bytes"
-	"math/rand"
-	"strconv"
 
 	"fmt"
 	"io"
@@ -55,13 +53,29 @@ func Search(title string) (map[string]string, error) {
 	queryParams.Set("ftext", title)
 
 	// Формируем URL с параметрами
-	url := "https://www.elibrary.ru/query_results.asp?"
-	fullURL := url + queryParams.Encode()
+	requrl := "https://www.elibrary.ru/query_results.asp?"
+	fullURL := requrl + queryParams.Encode()
 
 	jar, _ := cookiejar.New(nil)
 	client := &http.Client{Jar: jar}
 
-	resp, err := client.Get(fullURL)
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		fmt.Println("Ошибка формирования запроса:", err)
+		return nil, err
+	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+	req.Header.Set("DNT", "1")                 // Do Not Track
+	req.Header.Set("Connection", "keep-alive") // поддерживает постоянное соединение
+	req.Header.Set("Upgrade-Insecure-Requests", "1")
+	req.Header.Set("Referer", "https://site.ru/")
+	req.Header.Set("Sec-Fetch-Site", "same-site")
+	req.Header.Set("Sec-Fetch-Mode", "navigate")
+	req.Header.Set("Sec-Fetch-Dest", "document")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Ошибка при выполнении запроса: %v \n", err)
 		return nil, err
@@ -82,36 +96,79 @@ func Search(title string) (map[string]string, error) {
 	}
 
 	references := make(map[string]string)
+	//fmt.Println(ids)
 
-	for _, id := range ids[:min(len(ids), MaxIDsToProcess)] {
-		randParam := RandElibraryNumber()
-		url := fmt.Sprintf("https://www.elibrary.ru/for_reference.asp?id=%s&rand=%s", id, randParam)
+	spans, _ := ExtractSpanTexts(htmlContent)
 
-		resp, err := client.Get(url)
-		if err != nil {
-			log.Printf("Ошибка при выполнении запроса: %v", err)
-			return references, err
-		}
+	for i, id := range ids[:min(len(ids), MaxIDsToProcess)] {
 
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Ошибка чтения ответа: %v\n", err)
-			return references, err
-		}
-
-		htmlContent := string(bodyBytes)
-		result, err := extractRefDiv(htmlContent)
-		if err != nil {
-			log.Printf("Ошибка извлечения контента: %v\n", err)
-			return references, err
-		}
-
+		result := spans[i*2]
 		link := "https://www.elibrary.ru/item.asp?id=" + id
 		references[link] = result
 
 	}
 
+	// for idx, text := range spans {
+	// 	fmt.Printf("[%d]: %s\n", idx, text)
+	// }
+
+	client.Jar.SetCookies(&url.URL{Scheme: "https", Host: "https://elibrary.ru"}, nil) // Сбрасываем cookie
+	client.CloseIdleConnections()
+
 	return references, nil
+}
+
+func ExtractSpanTexts(htmlContent string) ([]string, error) {
+	// Создаем reader из строки HTML
+	reader := strings.NewReader(htmlContent)
+
+	// Парсим HTML
+	doc, err := html.Parse(reader)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при разборе HTML: %w", err)
+	}
+
+	// Список для хранения текстов из тегов <span>
+	var spans []string
+
+	// Рекурсивная функция для обхода узлов
+	var traverse func(*html.Node)
+	traverse = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "span" {
+			spans = append(spans, innerText(n))
+		}
+
+		// Рекурсивно идём по дочерним узлам
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			traverse(c)
+		}
+	}
+
+	// Начинаем обход дерева с корневого узла
+	traverse(doc)
+
+	return spans, nil
+}
+
+// Внутренняя функция для извлечения текста из узла
+func innerText(n *html.Node) string {
+	var buf strings.Builder
+
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
+		if n.Type == html.TextNode {
+			buf.WriteString(n.Data)
+			buf.WriteString(" ")
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			walk(c)
+		}
+	}
+
+	walk(n)
+
+	str := strings.TrimSpace(buf.String())
+	return strings.ReplaceAll(str, "\n", "")
 }
 
 func extractIDs(htmlContent string) ([]string, error) {
@@ -142,61 +199,4 @@ func extractIDs(htmlContent string) ([]string, error) {
 	f(doc)
 
 	return ids, nil
-}
-
-func RandElibraryNumber() string {
-	// Генерация случайного числа float64 в диапазоне [0.0, 1.0)
-	randomNumber := rand.Float64()
-	return strconv.FormatFloat(randomNumber, 'f', 17, 64)
-}
-
-func extractRefDiv(htmlContent string) (string, error) {
-	// Парсим HTML
-	doc, err := html.Parse(strings.NewReader(htmlContent))
-	if err != nil {
-		return "", fmt.Errorf("ошибка при разборе HTML: %w", err)
-	}
-
-	// Поиск нужного элемента
-	var refDivContent string
-	var traverse func(*html.Node)
-	traverse = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "div" {
-			for _, attr := range n.Attr {
-				if attr.Key == "id" && attr.Val == "ref" {
-					refDivContent = innerText(n)
-					break
-				}
-			}
-		}
-
-		for child := n.FirstChild; child != nil; child = child.NextSibling {
-			traverse(child)
-		}
-	}
-
-	traverse(doc)
-
-	return refDivContent, nil
-}
-
-// innerText собирает внутренний текст элемента
-func innerText(node *html.Node) string {
-	var buffer strings.Builder
-
-	var walk func(*html.Node)
-	walk = func(n *html.Node) {
-		switch n.Type {
-		case html.TextNode:
-			buffer.WriteString(n.Data)
-		default:
-			for child := n.FirstChild; child != nil; child = child.NextSibling {
-				walk(child)
-			}
-		}
-	}
-
-	walk(node)
-
-	return strings.TrimSpace(buffer.String())
 }

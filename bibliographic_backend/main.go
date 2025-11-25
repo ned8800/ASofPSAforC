@@ -28,11 +28,11 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 		//return
 	}
 
-	articles2, err := search.SearchGoogleScholar(query)
-	if err != nil {
-		log.Printf("Ошибка при выполнении запроса: %v \n", err)
-		//return
-	}
+	// articles2, err := search.SearchGoogleScholar(query)
+	// if err != nil {
+	// 	log.Printf("Ошибка при выполнении запроса: %v \n", err)
+	// 	//return
+	// }
 
 	var response []elibraryArticlesJSON
 
@@ -43,13 +43,13 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 		}
 		response = append(response, article)
 	}
-	for link, title := range articles2 {
-		article := elibraryArticlesJSON{
-			Title: title,
-			Link:  link,
-		}
-		response = append(response, article)
-	}
+	// for link, title := range articles2 {
+	// 	article := elibraryArticlesJSON{
+	// 		Title: title,
+	// 		Link:  link,
+	// 	}
+	// 	response = append(response, article)
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
