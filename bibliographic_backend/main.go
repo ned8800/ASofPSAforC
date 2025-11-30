@@ -25,6 +25,7 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 
 	if !utils.SearchInputIsValid(query) {
 		http.Error(w, "Недостаточно данных для поиска", http.StatusBadRequest)
+		return
 	}
 
 	articles, err := search.Search(query)

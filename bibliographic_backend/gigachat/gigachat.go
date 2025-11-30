@@ -46,6 +46,7 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 	incomingData := req.UserRequest
 	if !utils.FormatInputIsValid(incomingData) {
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+		return
 	}
 
 	response, err := s.SendRequest(req)
@@ -72,6 +73,7 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 
 	if !utils.FormatInputIsValid(incomingData) {
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+		return
 	}
 
 	unformedLinks := splitText(incomingData)
