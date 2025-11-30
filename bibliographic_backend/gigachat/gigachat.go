@@ -1,6 +1,7 @@
 package gigachat
 
 import (
+	"bibliographic_litriture_gigachat/utils"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -42,6 +43,11 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	incomingData := req.UserRequest
+	if !utils.FormatInputIsValid(incomingData) {
+		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+	}
+
 	response, err := s.SendRequest(req)
 	if err != nil {
 		http.Error(w, "failed to send request to gptServer", http.StatusInternalServerError)
@@ -63,6 +69,10 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	incomingData := req.UserRequest
+
+	if !utils.FormatInputIsValid(incomingData) {
+		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+	}
 
 	unformedLinks := splitText(incomingData)
 
