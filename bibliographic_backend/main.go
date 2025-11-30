@@ -3,6 +3,7 @@ package main
 import (
 	gigachatService "bibliographic_litriture_gigachat/gigachat"
 	search "bibliographic_litriture_gigachat/search"
+	"bibliographic_litriture_gigachat/utils"
 
 	"encoding/json"
 	"log"
@@ -21,6 +22,10 @@ type elibraryArticlesJSON struct {
 func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	query := params.Get("query")
+
+	if utils.SearchInputIsValid(query) {
+		http.Error(w, "Недостаточно данных для поиска", http.StatusBadRequest)
+	}
 
 	articles, err := search.Search(query)
 	if err != nil {
