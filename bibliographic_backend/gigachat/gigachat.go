@@ -99,7 +99,8 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Answer = responseStrings
-	//response.Answer = strings.Join(responseStrings, "\n")
+
+	response.Answer = fmt.Sprintf("Библиографические записи:\n%s", response.Answer)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
