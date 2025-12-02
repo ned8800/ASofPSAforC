@@ -24,8 +24,10 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 
 	articles, err := search.Search(query)
 	if err != nil {
-		log.Printf("Ошибка при выполнении запроса: %v \n", err)
-		//return
+		log.Printf("Ошибка при выполнении запроса: query:'%s'; error:'%v' \n", query, err)
+
+		http.Error(w, "Not found", http.StatusInternalServerError)
+		return
 	}
 
 	var response []elibraryArticlesJSON
