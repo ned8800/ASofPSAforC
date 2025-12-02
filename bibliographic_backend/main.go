@@ -3,6 +3,7 @@ package main
 import (
 	gigachatService "bibliographic_litriture_gigachat/gigachat"
 	search "bibliographic_litriture_gigachat/search"
+	"bibliographic_litriture_gigachat/utils"
 
 	"encoding/json"
 	"log"
@@ -22,11 +23,15 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	query := params.Get("query")
 
+	if !utils.SearchInputIsValid(query) {
+		http.Error(w, "Недостаточно данных для поиска", http.StatusBadRequest)
+		return
+	}
+
 	articles, err := search.Search(query)
 	if err != nil {
-		log.Printf("Ошибка при выполнении запроса: query:'%s'; error:'%v' \n", query, err)
-
-		http.Error(w, "Not found", http.StatusInternalServerError)
+		log.Printf("Ошибка при выполнении запроса: %v \n", err)
+		http.Error(w, "Не удалось выполнить поиск", http.StatusBadRequest)
 		return
 	}
 
@@ -49,13 +54,6 @@ func main() {
 	gigachatClient := gigachat.NewClient(os.Getenv("GIGACHAT_CLIENT_ID"), os.Getenv("GIGACHAT_CLIENT_SECRET"))
 
 	gigaChatService := gigachatService.New(gigachatClient)
-
-	// exampleStrings := []string{"Введение в философию. М-: Политиздат, 2009.- Т. 2. -243 с. ",
-	// 	"Сартр Ж.-П. Размышления о еврейском вопросе. – Париж: Галлимар, 1952.",
-	// 	"Material UI, официальный сайт.",
-	// 	"Habr. Как написать идеальный запрос для ChatGPT."}
-	// exampleTypes := gigaChatService.IdentifyTypes(exampleStrings)
-	// fmt.Println(gigaChatService.SendMultipleRequest(exampleStrings, exampleTypes))
 
 	// b, err := bot.New(gigaChatService)
 	// if err != nil {

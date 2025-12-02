@@ -1,6 +1,7 @@
 package gigachat
 
 import (
+	"bibliographic_litriture_gigachat/utils"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -42,9 +43,15 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	incomingData := req.UserRequest
+	if !utils.FormatInputIsValid(incomingData) {
+		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+		return
+	}
+
 	response, err := s.SendRequest(req)
 	if err != nil {
-		http.Error(w, "failed to send request to gptServer", http.StatusInternalServerError)
+		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 	}
 
@@ -64,6 +71,11 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 
 	incomingData := req.UserRequest
 
+	if !utils.FormatInputIsValid(incomingData) {
+		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
+		return
+	}
+
 	unformedLinks := splitText(incomingData)
 
 	// unformedLinks := []string{
@@ -76,13 +88,13 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 
 	typeStrings, err := s.IdentifyTypes(unformedLinks)
 	if err != nil {
-		http.Error(w, "failed to send type request to gptServer", http.StatusInternalServerError)
+		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 	}
 
 	responseStrings, err := s.SendMultipleRequest(unformedLinks, typeStrings)
 	if err != nil {
-		http.Error(w, "failed to send multiple format request to gptServer", http.StatusInternalServerError)
+		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 	}
 
