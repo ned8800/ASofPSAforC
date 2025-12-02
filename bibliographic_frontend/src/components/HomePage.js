@@ -1,5 +1,4 @@
 // src/components/HomePage.js
-import React from "react";
 import { Container, Button, Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -16,17 +15,17 @@ function HomePage() {
         <Button 
           variant="contained" 
           size="large"
-          onClick={() => navigate("/reference-form")}
+          onClick={() => navigate("/reference-form-multi-row")}
         >
-          Форма (стандартный ввод)
+          Создать библиографические ссылки
         </Button>
 
         <Button 
           variant="outlined" 
           size="large"
-          onClick={() => navigate("/reference-form-multi-row")}
+          onClick={() => navigate("/search")}
         >
-          Форма (многострочный ввод)
+          Найти статьи для оформления в elibrary
         </Button>
       </Box>
     </Container>

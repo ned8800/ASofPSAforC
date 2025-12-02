@@ -1,4 +1,3 @@
-// src/components/ReferenceFormMultiRow.js
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -15,7 +14,6 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom"; 
 
-// ✅ Название компонента изменено
 function ReferenceFormMultiRow({ initialAnswer = "" }) {
   const [userRequest, setUserRequest] = useState("");
   const [promptType, setPromptType] = useState("");
@@ -74,21 +72,27 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
   return (
     <Container maxWidth="sm" sx={{ mt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="h4" gutterBottom align="center">
-        Составление (многострочная форма)
+        Составление библиографических ссылок на литературу
       </Typography>
 
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>
+          <Button 
+            variant="text" 
+            onClick={() => navigate("/")}
+          >
+            ← Вернуться на главную
+          </Button>
+      </Box>
+
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
-        
         <TextField
           label="Запрос пользователя"
           value={userRequest}
           onChange={(e) => setUserRequest(e.target.value)}
           required
-          // ✅✅✅ ВОТ ИЗМЕНЕНИЯ ✅✅✅
           multiline
-          maxRows={10} // Поле будет расти до 10 строк, потом появится скролл
-          // ✅✅✅ КОНЕЦ ИЗМЕНЕНИЙ ✅✅✅
-          InputProps={{
+          maxRows={10}
+          slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title="Введите информацию об источнике (например: 'статья иванова и и в журнале вестник науки')">
@@ -98,7 +102,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
                 </Tooltip>
               </InputAdornment>
             ),
-          }}
+          } }}
         />
         
         <TextField
@@ -107,7 +111,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           label="Выбрать тип записи (или оставить по умолчанию)"
           value={promptType}
           onChange={(e) => setPromptType(e.target.value)}
-          InputProps={{
+          slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования.">
@@ -119,7 +123,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
                 </Tooltip>
               </InputAdornment>
             ),
-          }}
+          } }}
         >
           <MenuItem value=""><em>-- Выберите тип --</em></MenuItem>
           <MenuItem value="Книга">Книга</MenuItem>
@@ -138,7 +142,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
             label="Указать свой тип записи"
             value={customType}
             onChange={(e) => setCustomType(e.target.value)}
-            InputProps={{
+            slotProps={{ input: {
               endAdornment: (
                 <InputAdornment position="end">
                   <Tooltip title="Введите свой собственный тип источника, если его нет в списке.">
@@ -148,7 +152,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
                   </Tooltip>
                 </InputAdornment>
               ),
-            }}
+            } }}
           />
         )}
 
@@ -156,7 +160,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           label="Указать определенный формат записи (или оставить пустым по умолчанию)"
           value={exampleRecord}
           onChange={(e) => setExampleRecord(e.target.value)}
-          InputProps={{
+          slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
@@ -166,7 +170,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
                 </Tooltip>
               </InputAdornment>
             ),
-          }}
+          } }}
         />
 
         <Button type="submit" variant="contained" size="large">
@@ -176,7 +180,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         <Button 
           variant="outlined" 
           size="large"
-          onClick={() => navigate("/search")} // Этот роут у вас уже был, оставляем
+          onClick={() => navigate("/search")}
           sx={{ mt: 1 }}
         >
           Найти статьи в e-library
@@ -192,7 +196,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           multiline
           rows={10}
           fullWidth
-          InputProps={{ readOnly: true }}
+          slotProps={{ input: { readOnly: true } }}
           sx={{ mt: 3 }}
         />
       )}
@@ -200,5 +204,4 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
   );
 }
 
-// ✅ Экспорт изменен
 export default ReferenceFormMultiRow;

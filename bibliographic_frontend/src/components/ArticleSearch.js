@@ -17,16 +17,13 @@ import { useNavigate } from "react-router-dom";
 function ArticleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [articles, setArticles] = useState([]); 
-  // Используем Set для хранения УНИКАЛЬНЫХ ссылок (link) выбранных статей
   const [selectedArticles, setSelectedArticles] = useState(new Set()); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSearch = async (e) => {
-    
-    
-     e.preventDefault();
+    e.preventDefault();
     setArticles([]);
     setSelectedArticles(new Set());
     setError("");
@@ -42,7 +39,13 @@ function ArticleSearch() {
       }
 
       const data = await res.json();
-      setArticles(data);
+
+      if (data) {
+        setArticles(data);
+      } else {
+        setArticles([]);
+        setError('Поиск не дал результатов');
+      }
     } catch (err) {
       setError("Ошибка сети: " + err.message);
     } finally {
@@ -50,25 +53,21 @@ function ArticleSearch() {
     }
   };
 
-// ✅ ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ФЛАЖКА (работает для одного элемента)
+  // ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ФЛАЖКА
   const handleToggle = (link, title) => (e) => {
-    // Формируем ключ для хранения, как вы просили: link + title
     const key = link + title; 
-
-    // Создаем НОВЫЙ Set для обеспечения иммутабельности состояния React
     const newSelected = new Set(selectedArticles); 
     
-    // Проверяем состояние текущего флажка
     if (e.target.checked) {
-      newSelected.add(key); // Добавляем ключ (link + title)
+      newSelected.add(key);
     } else {
-      newSelected.delete(key); // Удаляем ключ (link + title)
+      newSelected.delete(key);
     }
     
-    // Обновляем состояние
     setSelectedArticles(newSelected);
   };
 
+  // функция для генерации ссылок по выбраным источникам
   const handleGenerateReferences = async () => {
     if (selectedArticles.size === 0) {
       alert("Выберите хотя бы одну статью.");
@@ -79,16 +78,16 @@ function ArticleSearch() {
     setError("");
     const links = [...selectedArticles]
               .map((item, index) => `${index + 1}) ${item}`)
-              .join('; ');
+              .join(';\n ');
 
     try {
       const payload = {
         user_request: links, 
-        prompt_type: "Статья из журнала", 
+        prompt_type: "Статья из журнала", // ищем именно в elibrary, поэтому тип определен заранее
         example_record: null,
       };
 
-      const res = await fetch("http://localhost:8080/request", {
+      const res = await fetch("http://localhost:8080/requestMultyRow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -104,7 +103,7 @@ function ArticleSearch() {
       const data = await res.json();
       const generatedAnswer = data.answer || "Библиографические записи сгенерированы.";
       
-      navigate("/", { state: { initialAnswer: generatedAnswer } });
+      navigate("/reference-form-multi-row", { state: { initialAnswer: generatedAnswer } });
 
     } catch (err) {
       setError("Ошибка сети при генерации: " + err.message);
@@ -122,7 +121,7 @@ function ArticleSearch() {
       <Box sx={{ mb: 2 }}>
          <Button 
             variant="text" 
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/reference-form-multi-row")}
          >
             ← Вернуться к форме
          </Button>
@@ -148,20 +147,16 @@ function ArticleSearch() {
         <>
           <List>
             {articles.map((article) => {
-              // ✅ Формируем ключ для проверки состояния флажка
               const checkboxKey = article.link + article.title; 
               
               return (
                 <ListItem 
-                  // Используем уникальный ключ для React
                   key={article.link} 
                   sx={{ display: 'flex', alignItems: 'flex-start' }} 
                 >
                   <input
                       type="checkbox"
-                      // ✅ Проверяем наличие нового ключа (link + title) в Set
                       checked={selectedArticles.has(checkboxKey)} 
-                      // ✅ Передаем link И title в обработчик
                       onChange={handleToggle(article.link, article.title)} 
                       style={{ marginTop: '8px', marginRight: '16px' }} 
                   />
@@ -184,7 +179,6 @@ function ArticleSearch() {
             size="large"
             fullWidth
             onClick={handleGenerateReferences}
-            // Количество выбранных элементов корректно считается
             disabled={selectedArticles.size === 0 || loading} 
             sx={{ mt: 3, mb: 2 }}
           >
@@ -194,7 +188,7 @@ function ArticleSearch() {
            <Button 
                 variant="outlined" 
                 fullWidth
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/reference-form-multi-row")}
             >
                 Вернуться к форме (отмена выбора)
            </Button>
