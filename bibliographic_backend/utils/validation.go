@@ -12,13 +12,23 @@ const (
 	minFormatWords   = 4
 	maxSearchSymbols = 100
 	maxFormatSymbols = 1500
+	maxFormatLinks   = 10
 )
 
 var (
 	ErrDigitsOnly     = errors.New("input is only digits")
 	ErrInputTooShort  = errors.New("input is too short")
 	ErrNotEnoughWords = errors.New("not enough words")
+	ErrInputTooLong   = errors.New("input is too long")
 )
+
+func FormatLinksIsValid(input []string) error {
+	if len(input) > maxFormatLinks {
+		return ErrInputTooLong
+	}
+
+	return nil
+}
 
 func SearchInputIsValid(input string) error {
 	if len(input) < minSearchSymbols {

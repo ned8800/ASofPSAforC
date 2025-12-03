@@ -79,15 +79,19 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unformedLinks := splitText(incomingData)
+	unformedLinks, err := splitUserInputText(incomingData)
+	if err != nil {
+		log.Printf("utils.FormatInputIsValid: %v", err)
+		http.Error(w, "Слишком длинный запрос", http.StatusBadRequest)
+		return
+	}
 
 	// unformedLinks := []string{
-	// 	`IEEE/ISO/IEC 26515-2018 "International Standard – Systems and software engineering – Developing information for users in an agile environment". – URL: https://standards.ieee.org/ieee/1363/6936/ (дата обращения: 25.09.2025).`,
-	// 	`Федеральное агентство по техническому регулированию и метрологии. ГОСТ Р ИСО/МЭК 12207–2010 «Процессы жизненного цикла программных средств». – Москва: Стандартинформ, 2011. – 105 с.`,
-	// 	`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
+	// `IEEE/ISO/IEC 26515-2018 "International Standard – Systems and software engineering – Developing information for users in an agile environment". – URL: https://standards.ieee.org/ieee/1363/6936/ (дата обращения: 25.09.2025).`,
+	// `Федеральное агентство по техническому регулированию и метрологии. ГОСТ Р ИСО/МЭК 12207–2010 «Процессы жизненного цикла программных средств». – Москва: Стандартинформ, 2011. – 105 с.`,
+	// `Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	// }
 
-	var err error
 	typeStrings := make([]string, len(unformedLinks))
 
 	if req.PromptType == "" {
@@ -118,8 +122,18 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func splitText(text string) []string {
-	return strings.Split(text, "\n")
+func splitUserInputText(userInputText string) ([]string, error) {
+	if err := utils.FormatInputIsValid(userInputText); err != nil {
+		return nil, fmt.Errorf("%w:%w", utils.ErrInputTooLong, err)
+	}
+
+	formatLinks := strings.Split(userInputText, "\n")
+
+	if err := utils.FormatLinksIsValid(formatLinks); err != nil {
+		return nil, fmt.Errorf("%w:%w", utils.ErrInputTooLong, err)
+	}
+
+	return formatLinks, nil
 }
 
 func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {

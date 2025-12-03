@@ -123,6 +123,34 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         Составление библиографических ссылок на литературу
       </Typography>
 
+      {/* НОВЫЙ БЛОК СПРАВКИ */}
+      <Box sx={{ 
+          width: "100%", 
+          p: 2, 
+          mb: 3, 
+          backgroundColor: '#f5f5f5', 
+          borderRadius: 1,
+          borderLeft: '4px solid #1976d2',
+      }}>
+        <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
+          Краткая справка
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          Этот инструмент предназначен для автоматического создания библиографических ссылок на источники в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
+        </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 1 }}>
+          Как пользоваться:
+        </Typography>
+        <Box component="ul" sx={{ mt: 0, pl: 2, '& li': { mb: 0.5 } }}>
+            <Typography component="li" variant="body2">Введите данные в поле "Запрос пользователя": введите информацию об источнике, например:
+              'статья И.И. Иванова Распространение папоротников в журнале вестник науки, URL=example.com/...'.
+               Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки. </Typography>
+            <Typography component="li" variant="body2">Выберите тип источника (опционально) для большей точности. Или оставьте по умолчанию, тогда система сама определит тип</Typography>
+            <Typography component="li" variant="body2">Нажмите "Отправить" и получите готовые ссылки.</Typography>
+        </Box>
+      </Box>
+      {/* КОНЕЦ НОВОГО БЛОКА */}
+
       <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>
           <Button 
             variant="text" 
@@ -141,6 +169,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           multiline
           maxRows={10}
           slotProps={{ input: {
+            maxLength: 1500,
             endAdornment: (
               <InputAdornment position="end">
                 <ClickableTooltip title="Введите информацию об источнике (например: 'статья И.И. Иванова <Название> в журнале вестник науки').
@@ -167,8 +196,8 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
               setExampleRecord("");
             }
           }}
-          
           slotProps={{ input: {
+            maxLength: 50,
             endAdornment: (
               <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
 
@@ -213,6 +242,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
             value={exampleRecord}
             onChange={(e) => setExampleRecord(e.target.value)}
             slotProps={{ input: {
+              maxLength: 200,
               endAdornment: (
                 <InputAdornment position="end">
                   <ClickableTooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
