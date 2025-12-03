@@ -22,6 +22,8 @@ const (
 const (
 	FrontendHostEnv     = "FRONTEND_HOST"
 	FrontendHostWSEnv   = "FRONTEND_HOST_WS"
+	BACKEND_HOST_ADRESS = "BACKEND_HOST_ADRESS"
+	BACKEND_HOST_PORT   = "BACKEND_HOST_PORT"
 	AllowedMethodsEnv   = "server.access_control_allow_methods"
 	AllowCredentialsEnv = "server.access_control_allow_credentials"
 	AllowedHeadersEnv   = "server.access_control_allow_headers"
@@ -66,6 +68,16 @@ func SetupNewConfig() (*ConfigVariablesStruct, error) {
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Error().Err(fmt.Errorf("%w: %s", err, errs.ErrUnmarshalConfig)).Msg(fmt.Errorf("%w: %s", err, errs.ErrUnmarshalConfig).Error())
 		return nil, fmt.Errorf("%w: %s", err, errs.ErrUnmarshalConfig)
+	}
+
+	// preoritize .env config
+	if viper.GetString(BACKEND_HOST_ADRESS) != "" {
+		config.Server.Address = viper.GetString(BACKEND_HOST_ADRESS)
+	}
+
+	// preoritize .env config
+	if viper.GetString(BACKEND_HOST_PORT) != "" {
+		config.Server.Port = viper.GetInt(BACKEND_HOST_PORT)
 	}
 
 	log.Info().Msg("Config initialized")

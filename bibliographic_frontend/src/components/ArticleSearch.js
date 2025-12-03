@@ -145,9 +145,6 @@ function ArticleSearch() {
         </Button>
       </Box>
 
-      {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
-      {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
-
       {articles.length > 0 && (
         <>
           <List>
@@ -207,6 +204,10 @@ function ArticleSearch() {
            </Button>
         </>
       )}
+
+      {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
+      {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
+      
     </Container>
   );
 }
