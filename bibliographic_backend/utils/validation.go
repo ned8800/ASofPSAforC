@@ -10,6 +10,8 @@ const (
 	minSearchSymbols = 5
 	minFormatSymbols = 15
 	minFormatWords   = 4
+	maxSearchSymbols = 100
+	maxFormatSymbols = 1500
 )
 
 var (
@@ -23,6 +25,10 @@ func SearchInputIsValid(input string) error {
 		return ErrInputTooShort
 	}
 
+	if len(input) > maxSearchSymbols {
+		return ErrInputTooShort
+	}
+
 	if isDigitsOnly(input) {
 		return ErrDigitsOnly
 	}
@@ -32,6 +38,10 @@ func SearchInputIsValid(input string) error {
 
 func FormatInputIsValid(input string) error {
 	if len(input) < minFormatSymbols {
+		return ErrInputTooShort
+	}
+
+	if len(input) > maxFormatSymbols {
 		return ErrInputTooShort
 	}
 
