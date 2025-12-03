@@ -84,23 +84,30 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	// 	`Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	// }
 
-	var response FormResponse
+	var err error
+	typeStrings := make([]string, len(unformedLinks))
 
-	typeStrings, err := s.IdentifyTypes(unformedLinks)
-	if err != nil {
-		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+	if req.PromptType == "" {
+		typeStrings, err = s.IdentifyTypes(unformedLinks)
+		if err != nil {
+			http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
+			log.Println(fmt.Errorf("gptServerClient.IdentifyTypes: %w", err))
+		}
+	} else {
+		for i := 0; i < len(unformedLinks); i++ {
+			typeStrings[i] = req.PromptType
+		}
 	}
 
 	responseStrings, err := s.SendMultipleRequest(unformedLinks, typeStrings)
 	if err != nil {
 		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+		log.Println(fmt.Errorf("gptServerClient.SendMultipleRequest: %w", err))
 	}
 
-	response.Answer = responseStrings
-
-	response.Answer = fmt.Sprintf("Библиографические записи:\n%s", response.Answer)
+	response := FormResponse{
+		Answer: fmt.Sprintf("Библиографические записи:\n%s", responseStrings),
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
