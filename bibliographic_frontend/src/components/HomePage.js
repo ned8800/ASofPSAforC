@@ -24,6 +24,14 @@ function HomePage() {
           variant="outlined" 
           size="large"
           onClick={() => navigate("/search")}
+          sx={{
+            borderWidth: 2,
+            borderStyle: 'solid',
+            backgroundColor: '#e0e0e0', // устанавливаем фоновое оформление
+            ':hover': {               // применяем эффекты при наведении
+              backgroundColor: '#ddd5d5ff', // цвет фона при наведении
+            },
+          }}
         >
           Найти статьи для оформления в elibrary
         </Button>

@@ -64,7 +64,6 @@ const ClickableTooltip = ({ title, children }) => {
 function ReferenceFormMultiRow({ initialAnswer = "" }) {
   const [userRequest, setUserRequest] = useState("");
   const [promptType, setPromptType] = useState("");
-  const [customType, setCustomType] = useState("");
   const [exampleRecord, setExampleRecord] = useState("");
   const [answer, setAnswer] = useState(initialAnswer); 
   const [error, setError] = useState("");
@@ -82,9 +81,9 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
     e.preventDefault();
     setAnswer("");
     setError("");
-    setLoading(true);
+    setLoading(false);
 
-    const finalType = promptType === "Другой" ? customType || null : promptType || null;
+    const finalType = promptType === "" ? null : promptType;
 
     const payload = {
       user_request: userRequest,
@@ -92,7 +91,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
       example_record: exampleRecord || null,
     };
 
-   
+    setLoading(true);
     try {
         const res = await fetch(`${REF_FORM_MULTYROW_URL}`, {
             method: "POST",
@@ -162,7 +161,12 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           maxRows={10}
           label='Выбрать тип записи (или оставить по умолчанию, тогда система сама определит тип)'
           value={promptType}
-          onChange={(e) => setPromptType(e.target.value)}
+          onChange={(e) => {
+            setPromptType(e.target.value);
+            if (e.target.value !== "Другой") {
+              setExampleRecord("");
+            }
+          }}
           
           slotProps={{ input: {
             endAdornment: (
@@ -204,13 +208,14 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
 
         {promptType === "Другой" && (
           <TextField
-            label="Указать свой тип записи"
-            value={customType}
-            onChange={(e) => setCustomType(e.target.value)}
+            required
+            label="Указать определенный формат записи (или оставить пустым по умолчанию)"
+            value={exampleRecord}
+            onChange={(e) => setExampleRecord(e.target.value)}
             slotProps={{ input: {
               endAdornment: (
                 <InputAdornment position="end">
-                  <ClickableTooltip title="Введите свой собственный тип источника, если его нет в списке.">
+                  <ClickableTooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
                     <IconButton edge="end">
                       <InfoOutlinedIcon />
                     </IconButton>
@@ -221,23 +226,6 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           />
         )}
 
-        <TextField
-          label="Указать определенный формат записи (или оставить пустым по умолчанию)"
-          value={exampleRecord}
-          onChange={(e) => setExampleRecord(e.target.value)}
-          slotProps={{ input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <ClickableTooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
-                  <IconButton edge="end">
-                    <InfoOutlinedIcon />
-                  </IconButton>
-                </ClickableTooltip>
-              </InputAdornment>
-            ),
-          } }}
-        />
-
         <Button type="submit" variant="contained" size="large">
           Отправить
         </Button>
@@ -246,7 +234,15 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           variant="outlined" 
           size="large"
           onClick={() => navigate("/search")}
-          sx={{ mt: 1 }}
+          sx={{
+            borderWidth: 2,
+            borderStyle: 'solid',
+            mt: 1,
+            backgroundColor: '#e0e0e0',
+            ':hover': {
+              backgroundColor: '#ddd5d5ff',
+            },
+          }}
         >
           Найти статьи в e-library
         </Button>

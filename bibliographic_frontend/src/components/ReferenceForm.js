@@ -177,7 +177,15 @@ function ReferenceForm({ initialAnswer = "" }) {
           variant="outlined" 
           size="large"
           onClick={() => navigate("/search")}
-          sx={{ mt: 1 }}
+          sx={{
+            borderWidth: 2,
+            borderStyle: 'solid',
+            mt: 1,
+            backgroundColor: '#e0e0e0', // устанавливаем фоновое оформление
+            ':hover': {               // применяем эффекты при наведении
+              backgroundColor: '#ddd5d5ff', // цвет фона при наведении
+            },
+          }}
         >
           Найти статьи в e-library
         </Button>

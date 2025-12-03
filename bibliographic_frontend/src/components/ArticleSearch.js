@@ -194,6 +194,14 @@ function ArticleSearch() {
                 variant="outlined" 
                 fullWidth
                 onClick={() => navigate("/reference-form-multi-row")}
+                sx={{
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  backgroundColor: '#e0e0e0', // устанавливаем фоновое оформление
+                  ':hover': {               // применяем эффекты при наведении
+                    backgroundColor: '#ddd5d5ff', // цвет фона при наведении
+                  },
+                }}
             >
                 Вернуться к форме (отмена выбора)
            </Button>
