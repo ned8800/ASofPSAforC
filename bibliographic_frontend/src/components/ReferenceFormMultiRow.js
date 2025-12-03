@@ -123,6 +123,15 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         Составление библиографических ссылок на литературу
       </Typography>
 
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>
+          <Button 
+            variant="text" 
+            onClick={() => navigate("/")}
+          >
+            ← Вернуться на главную
+          </Button>
+      </Box>
+
       {/* НОВЫЙ БЛОК СПРАВКИ */}
       <Box sx={{ 
           width: "100%", 
@@ -136,7 +145,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           Краткая справка
         </Typography>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          Этот инструмент предназначен для автоматического создания библиографических ссылок на источники в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
+          Этот инструмент предназначен для автоматизированного создания библиографических ссылок на источники из запроса пользователя в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
         </Typography>
         <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 1 }}>
           Как пользоваться:
@@ -150,15 +159,6 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         </Box>
       </Box>
       {/* КОНЕЦ НОВОГО БЛОКА */}
-
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>
-          <Button 
-            variant="text" 
-            onClick={() => navigate("/")}
-          >
-            ← Вернуться на главную
-          </Button>
-      </Box>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
