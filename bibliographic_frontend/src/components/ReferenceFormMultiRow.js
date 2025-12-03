@@ -10,9 +10,56 @@ import {
   Tooltip,
   IconButton,
   InputAdornment,
+  styled,
+  ClickAwayListener,
 } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { REF_FORM_MULTYROW_URL } from '../consts';
+
+const StyledTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  '& .MuiTooltip-tooltip': {
+    fontSize: '1.2rem', // Изменяем размер шрифта подсказки
+  },
+}));
+
+// НОВЫЙ ПЕРЕИСПОЛЬЗУЕМЫЙ КОМПОНЕНТ Tooltip
+const ClickableTooltip = ({ title, children }) => {
+  const [open, setOpen] = useState(false);
+
+  // Обработчик закрытия (по клику вне тултипа или при нажатии Esc)
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // Обработчик открытия/закрытия по клику на дочерний элемент
+  const handleToggle = (e) => {
+    e.stopPropagation(); 
+    setOpen((prev) => !prev);
+  };
+
+  return (
+    <ClickAwayListener onClickAway={handleClose}>
+      <StyledTooltip
+        title={title}
+        open={open}
+        onClose={handleClose}
+        disableFocusListener
+        // disableHoverListener
+        // Добавляем click listener к корневому элементу, который будет его открывать
+        onClick={handleToggle} 
+        arrow
+      >
+        <Box component="span" sx={{ display: 'flex' }}>
+          {children}
+        </Box>
+      </StyledTooltip>
+    </ClickAwayListener>
+  );
+};
 
 function ReferenceFormMultiRow({ initialAnswer = "" }) {
   const [userRequest, setUserRequest] = useState("");
@@ -47,7 +94,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
 
    
     try {
-        const res = await fetch("http://localhost:8080/requestMultyRow", {
+        const res = await fetch(`${REF_FORM_MULTYROW_URL}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -55,7 +102,8 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
 
         if (!res.ok) {
             const text = await res.text();
-            setError(`Ошибка: ${res.status} - ${text}`);
+            setError('Что-то пошло не так')
+            console.log(`Ошибка: ${res.status} - ${text}`);
             setLoading(false);
             return;
         }
@@ -63,7 +111,8 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         const data = await res.json();
         setAnswer(data.answer); 
     } catch (err) {
-        setError("Ошибка сети: " + err.message);
+        console.log(err)
+        setError("Ошибка сети: сервер на обслуживании");
     } finally {
         setLoading(false);
     }
@@ -95,11 +144,11 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
-                <Tooltip title="Введите информацию об источнике (например: 'статья иванова и и в журнале вестник науки')">
+                <ClickableTooltip title="Введите информацию об источнике (например: 'статья иванова и и в журнале вестник науки'). Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки">
                   <IconButton edge="end">
                     <InfoOutlinedIcon />
                   </IconButton>
-                </Tooltip>
+                </ClickableTooltip>
               </InputAdornment>
             ),
           } }}
@@ -108,22 +157,37 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         <TextField
           select
           fullWidth
-          label="Выбрать тип записи (или оставить по умолчанию)"
+          multiline
+          maxRows={10}
+          label='Выбрать тип записи (или оставить по умолчанию, тогда система сама определит тип)'
           value={promptType}
           onChange={(e) => setPromptType(e.target.value)}
+          
           slotProps={{ input: {
             endAdornment: (
-              <InputAdornment position="end">
-                <Tooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования.">
-                  <Box sx={{ mr: 2 }}> 
+              <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
+
+                {/* 2. Добавляем иконку стрелочки первой */}
+                <IconButton size="small" sx={{ 
+                    p: 0, 
+                    m: 0, // Отступ от иконки информации
+                    color: 'action.active' 
+                }}>
+                  <ArrowDropDownIcon />
+                </IconButton>
+
+                <ClickableTooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования. Или оставить по умолчанию, тогда система сама определит тип">
+                  <Box> 
                     <IconButton edge="end">
                       <InfoOutlinedIcon />
                     </IconButton>
                   </Box>
-                </Tooltip>
+                </ClickableTooltip>
               </InputAdornment>
             ),
-          } }}
+          },
+          select: { IconComponent: () => null },
+         }}
         >
           <MenuItem value=""><em>-- Выберите тип --</em></MenuItem>
           <MenuItem value="Книга">Книга</MenuItem>
@@ -145,11 +209,11 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
             slotProps={{ input: {
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip title="Введите свой собственный тип источника, если его нет в списке.">
+                  <ClickableTooltip title="Введите свой собственный тип источника, если его нет в списке.">
                     <IconButton edge="end">
                       <InfoOutlinedIcon />
                     </IconButton>
-                  </Tooltip>
+                  </ClickableTooltip>
                 </InputAdornment>
               ),
             } }}
@@ -163,11 +227,11 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
-                <Tooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
+                <ClickableTooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
                   <IconButton edge="end">
                     <InfoOutlinedIcon />
                   </IconButton>
-                </Tooltip>
+                </ClickableTooltip>
               </InputAdornment>
             ),
           } }}

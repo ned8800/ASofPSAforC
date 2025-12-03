@@ -12,7 +12,8 @@ import {
   ListItemText,
   Link,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { REF_FORM_MULTYROW_URL, SEARCH_ELIBRARY_URL } from '../consts';
 
 function ArticleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,11 +31,12 @@ function ArticleSearch() {
     setLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:8080/search_elibrary?query=${encodeURIComponent(searchTerm)}`);
+      const res = await fetch(`${SEARCH_ELIBRARY_URL}?query=${encodeURIComponent(searchTerm)}`);
 
       if (!res.ok) {
         const text = await res.text();
-        setError(`Ошибка: ${res.status} - ${text}`);
+        setError('Что-то пошло не так')
+        console.log(`Ошибка: ${res.status} - ${text}`);
         return;
       }
 
@@ -47,7 +49,8 @@ function ArticleSearch() {
         setError('Поиск не дал результатов');
       }
     } catch (err) {
-      setError("Ошибка сети: " + err.message);
+      setError("Ошибка сети: сервер на обслуживании");
+      console.log("Ошибка сети: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ function ArticleSearch() {
         example_record: null,
       };
 
-      const res = await fetch("http://localhost:8080/requestMultyRow", {
+      const res = await fetch(`${REF_FORM_MULTYROW_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -95,7 +98,8 @@ function ArticleSearch() {
 
       if (!res.ok) {
         const text = await res.text();
-        setError(`Ошибка при генерации: ${res.status} - ${text}`);
+        setError('Что-то пошло не так')
+        console.log(`Ошибка при генерации: ${res.status} - ${text}`);
         setLoading(false);
         return;
       }
@@ -106,7 +110,8 @@ function ArticleSearch() {
       navigate("/reference-form-multi-row", { state: { initialAnswer: generatedAnswer } });
 
     } catch (err) {
-      setError("Ошибка сети при генерации: " + err.message);
+      console.log(err.message)
+      setError("Ошибка сети: сервер на обслуживании");
     } finally {
       setLoading(false);
     }

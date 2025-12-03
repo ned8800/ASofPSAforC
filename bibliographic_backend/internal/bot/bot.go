@@ -1,8 +1,8 @@
 package bot
 
 import (
-	"bibliographic_litriture_gigachat/gigachat"
-	"bibliographic_litriture_gigachat/search"
+	"bibliographic_litriture_gigachat/internal/gigachat"
+	"bibliographic_litriture_gigachat/internal/search"
 	"errors"
 	"fmt"
 	"log"
