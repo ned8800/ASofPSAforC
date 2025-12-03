@@ -44,7 +44,8 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	incomingData := req.UserRequest
-	if !utils.FormatInputIsValid(incomingData) {
+	if err := utils.FormatInputIsValid(incomingData); err != nil {
+		log.Printf("utils.FormatInputIsValid: %v", err)
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
 		return
 	}
@@ -61,6 +62,7 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 
 func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	var req FormRequest
+	log.Println("err")
 
 	// Парсим входной JSON
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -71,7 +73,8 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 
 	incomingData := req.UserRequest
 
-	if !utils.FormatInputIsValid(incomingData) {
+	if err := utils.FormatInputIsValid(incomingData); err != nil {
+		log.Printf("utils.FormatInputIsValid: %v", err)
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
 		return
 	}
@@ -92,6 +95,7 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
 			log.Println(fmt.Errorf("gptServerClient.IdentifyTypes: %w", err))
+			return
 		}
 	} else {
 		for i := 0; i < len(unformedLinks); i++ {
@@ -103,6 +107,7 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
 		log.Println(fmt.Errorf("gptServerClient.SendMultipleRequest: %w", err))
+		return
 	}
 
 	response := FormResponse{
