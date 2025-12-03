@@ -194,9 +194,9 @@ function ArticleSearch() {
                 sx={{
                   borderWidth: 2,
                   borderStyle: 'solid',
-                  backgroundColor: '#e0e0e0', // устанавливаем фоновое оформление
-                  ':hover': {               // применяем эффекты при наведении
-                    backgroundColor: '#ddd5d5ff', // цвет фона при наведении
+                  backgroundColor: '#e0e0e0',
+                  ':hover': {
+                    backgroundColor: '#ddd5d5ff',
                   },
                 }}
             >
@@ -207,7 +207,7 @@ function ArticleSearch() {
 
       {loading && <CircularProgress sx={{ display: "block", mx: "auto" }} />}
       {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
-      
+
     </Container>
   );
 }

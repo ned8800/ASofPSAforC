@@ -14,7 +14,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-const MaxIDsToProcess = 15
+const MaxIDsToProcess = 7
 
 func Search(title string) (map[string]string, error) {
 
