@@ -1,42 +1,49 @@
 package utils
 
 import (
+	"errors"
 	"regexp"
 	"strings"
 )
 
-const minSearchSymbols = 5
-const minFormatSymbols = 15
-const minFormatWords = 4
+const (
+	minSearchSymbols = 5
+	minFormatSymbols = 15
+	minFormatWords   = 4
+)
 
-func SearchInputIsValid(input string) bool {
+var (
+	ErrDigitsOnly     = errors.New("input is only digits")
+	ErrInputTooShort  = errors.New("input is too short")
+	ErrNotEnoughWords = errors.New("not enough words")
+)
 
+func SearchInputIsValid(input string) error {
 	if len(input) < minSearchSymbols {
-		return false
+		return ErrInputTooShort
 	}
 
 	if isDigitsOnly(input) {
-		return false
+		return ErrDigitsOnly
 	}
 
-	return true
+	return nil
 }
 
-func FormatInputIsValid(input string) bool {
-
+func FormatInputIsValid(input string) error {
 	if len(input) < minFormatSymbols {
-		return false
+		return ErrInputTooShort
 	}
 
 	if countWords(input) < minFormatWords {
-		return false
+		return ErrNotEnoughWords
 	}
 
 	if isDigitsOnly(input) {
-		return false
+		return ErrDigitsOnly
 	}
 
-	return true
+	return nil
 }
 
 func countWords(s string) int {

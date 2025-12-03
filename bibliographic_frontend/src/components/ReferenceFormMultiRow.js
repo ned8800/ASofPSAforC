@@ -144,7 +144,8 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           slotProps={{ input: {
             endAdornment: (
               <InputAdornment position="end">
-                <ClickableTooltip title="Введите информацию об источнике (например: 'статья иванова и и в журнале вестник науки'). Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки">
+                <ClickableTooltip title="Введите информацию об источнике (например: 'статья И.И. Иванова <Название> в журнале вестник науки').
+                 Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки">
                   <IconButton edge="end">
                     <InfoOutlinedIcon />
                   </IconButton>
