@@ -129,11 +129,18 @@ func splitUserInputText(userInputText string) ([]string, error) {
 
 	formatLinks := strings.Split(userInputText, "\n")
 
+	var resultLinks []string // результирующий срез
+	for _, s := range formatLinks {
+		if strings.TrimSpace(s) != "" { // проверка на наличие непустого содержимого
+			resultLinks = append(resultLinks, s)
+		}
+	}
+
 	if err := utils.FormatLinksIsValid(formatLinks); err != nil {
 		return nil, fmt.Errorf("%w:%w", utils.ErrInputTooLong, err)
 	}
 
-	return formatLinks, nil
+	return resultLinks, nil
 }
 
 func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {
