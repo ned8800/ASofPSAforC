@@ -115,7 +115,7 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := FormResponse{
-		Answer: fmt.Sprintf("Библиографические записи:\n%s", responseStrings),
+		Answer: fmt.Sprintf("Библиографические ссылки:\n%s", responseStrings),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

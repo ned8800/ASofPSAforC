@@ -105,7 +105,7 @@ function ArticleSearch() {
       }
 
       const data = await res.json();
-      const generatedAnswer = data.answer || "Библиографические записи сгенерированы.";
+      const generatedAnswer = data.answer || "Библиографические ссылки сгенерированы.";
       
       navigate("/reference-form-multi-row", { state: { initialAnswer: generatedAnswer } });
 
@@ -171,7 +171,8 @@ function ArticleSearch() {
               Подсказка:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Выберите нужные Вам статьи.
+              Выберите нужные Вам статьи из списка ниже, нажимая на квадратик сбоку от названия.
+              После чего нажмите на кнопку <i>"Оформить выбранные источники"</i> и система оформит источники по ГОСТ за вас!
             </Typography>
           </Box>
 
