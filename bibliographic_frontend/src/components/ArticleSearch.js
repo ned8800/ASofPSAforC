@@ -134,7 +134,7 @@ function ArticleSearch() {
 
       <Box component="form" onSubmit={handleSearch} sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
-          label="Поисковый запрос"
+          label="Введите ключевые слова для поиска"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           fullWidth
@@ -147,6 +147,34 @@ function ArticleSearch() {
 
       {articles.length > 0 && (
         <>
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleGenerateReferences}
+            disabled={selectedArticles.size === 0 || loading} 
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Оформить выбранные источники ({selectedArticles.size})
+          </Button>
+
+          <Box sx={{ 
+            width: "100%", 
+            p: 2, 
+            mb: 3, 
+            backgroundColor: '#f5f5f5', 
+            borderRadius: 1,
+            borderLeft: '4px solid #1976d2',
+          }}>
+            <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
+              Подсказка:
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Выберите нужные Вам статьи.
+            </Typography>
+          </Box>
+
           <List>
             {articles.map((article) => {
               const checkboxKey = article.link + article.title; 
@@ -160,7 +188,13 @@ function ArticleSearch() {
                       type="checkbox"
                       checked={selectedArticles.has(checkboxKey)} 
                       onChange={handleToggle(article.link, article.title)} 
-                      style={{ marginTop: '8px', marginRight: '16px' }} 
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        transform: 'scale(1.5)', // дополнительно масштабируем, если надо ещё больше
+                        marginTop: '8px',
+                        marginRight: '16px'
+                      }}
                   />
                   
                   <ListItemText
@@ -176,16 +210,7 @@ function ArticleSearch() {
             })}
           </List>
           
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={handleGenerateReferences}
-            disabled={selectedArticles.size === 0 || loading} 
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Сгенерировать библиографические записи ({selectedArticles.size})
-          </Button>
+          
 
            <Button 
                 variant="outlined" 

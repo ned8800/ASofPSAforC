@@ -120,7 +120,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
   return (
     <Container maxWidth="sm" sx={{ mt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="h4" gutterBottom align="center">
-        Составление библиографических ссылок на литературу
+        Оформление списка источников
       </Typography>
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>
@@ -132,37 +132,9 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           </Button>
       </Box>
 
-      {/* НОВЫЙ БЛОК СПРАВКИ */}
-      <Box sx={{ 
-          width: "100%", 
-          p: 2, 
-          mb: 3, 
-          backgroundColor: '#f5f5f5', 
-          borderRadius: 1,
-          borderLeft: '4px solid #1976d2',
-      }}>
-        <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
-          Краткая справка
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Этот инструмент предназначен для автоматизированного создания библиографических ссылок на источники из запроса пользователя в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
-        </Typography>
-        <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 1 }}>
-          Как пользоваться:
-        </Typography>
-        <Box component="ul" sx={{ mt: 0, pl: 2, '& li': { mb: 0.5 } }}>
-            <Typography component="li" variant="body2">Введите данные в поле "Запрос пользователя": введите информацию об источнике, например:
-              'статья И.И. Иванова Распространение папоротников в журнале вестник науки, URL=example.com/...'.
-               Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки. </Typography>
-            <Typography component="li" variant="body2">Выберите тип источника (опционально) для большей точности. Или оставьте по умолчанию, тогда система сама определит тип</Typography>
-            <Typography component="li" variant="body2">Нажмите "Отправить" и получите готовые ссылки.</Typography>
-        </Box>
-      </Box>
-      {/* КОНЕЦ НОВОГО БЛОКА */}
-
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
-          label="Запрос пользователя"
+          label="Ваш список"
           value={userRequest}
           onChange={(e) => setUserRequest(e.target.value)}
           required
@@ -257,7 +229,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         )}
 
         <Button type="submit" variant="contained" size="large">
-          Отправить
+          Оформить
         </Button>
         
         <Button 
@@ -291,6 +263,36 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           sx={{ mt: 3 }}
         />
       )}
+
+      {/* НОВЫЙ БЛОК СПРАВКИ */}
+      <Box sx={{ 
+          width: "100%", 
+          p: 2, 
+          mt: 3,
+          mb: 3, 
+          backgroundColor: '#f5f5f5', 
+          borderRadius: 1,
+          borderLeft: '4px solid #1976d2',
+      }}>
+        <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
+          Краткая справка
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          Этот инструмент предназначен для автоматизированного создания библиографических ссылок на источники из запроса пользователя в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
+        </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 1 }}>
+          Как пользоваться:
+        </Typography>
+        <Box component="ul" sx={{ mt: 0, pl: 2, '& li': { mb: 0.5 } }}>
+            <Typography component="li" variant="body2">Введите данные в поле "Ваш список": введите неоформленный список, содержащий информацию об источнике, например:
+              'статья И.И. Иванова Распространение папоротников в журнале вестник науки, URL=example.com/...'.
+               Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки. </Typography>
+            <Typography component="li" variant="body2">Выберите тип источника (опционально) для большей точности. Или оставьте по умолчанию, тогда система сама определит тип</Typography>
+            <Typography component="li" variant="body2">Нажмите "Оформить" и получите готовые ссылки.</Typography>
+        </Box>
+      </Box>
+      {/* КОНЕЦ НОВОГО БЛОКА */}
+
     </Container>
   );
 }

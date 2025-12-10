@@ -8,7 +8,7 @@ function HomePage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
       <Typography variant="h4" gutterBottom align="center">
-        Генератор библиографических записей
+        LibSource - генератор списка источников
       </Typography>
       
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
@@ -17,7 +17,7 @@ function HomePage() {
           size="large"
           onClick={() => navigate("/reference-form-multi-row")}
         >
-          Создать библиографические ссылки
+          Оформить свой список
         </Button>
 
         <Button 
@@ -36,6 +36,25 @@ function HomePage() {
           Найти статьи для оформления в elibrary
         </Button>
       </Box>
+
+      {/* НОВЫЙ БЛОК СПРАВКИ */}
+        <Box sx={{ 
+            width: "100%", 
+            p: 2, 
+            mb: 3, 
+            backgroundColor: '#f5f5f5', 
+            borderRadius: 1,
+            borderLeft: '4px solid #1976d2',
+        }}>
+          <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
+            Краткая справка
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Сервис предназначен для автоматизированного оформления списка источников для академических работ, а также для поиска статей и их оформления в список.
+          </Typography>
+        </Box>
+      {/* КОНЕЦ НОВОГО БЛОКА */}
+
     </Container>
   );
 }
