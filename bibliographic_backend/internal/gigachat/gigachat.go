@@ -14,6 +14,8 @@ import (
 	"github.com/evgensoft/gigachat"
 )
 
+const chunkSize = 8
+
 // Структура формы
 type FormRequest struct {
 	UserRequest   string `json:"user_request"`
@@ -92,15 +94,22 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	// `Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	// }
 
-	typeStrings := make([]string, len(unformedLinks))
+	typeStrings := make([]string, 0)
+
+	chunkLinks := ChunkStrings(unformedLinks, chunkSize)
 
 	if req.PromptType == "" {
-		typeStrings, err = s.IdentifyTypes(unformedLinks)
-		if err != nil {
-			http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-			log.Println(fmt.Errorf("gptServerClient.IdentifyTypes: %w", err))
-			return
+
+		for _, chunk := range chunkLinks {
+			temp, err := s.IdentifyTypes(chunk)
+			if err != nil {
+				http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
+				log.Println(fmt.Errorf("gptServerClient.IdentifyTypes: %w", err))
+				return
+			}
+			typeStrings = append(typeStrings, temp...)
 		}
+
 	} else {
 		for i := 0; i < len(unformedLinks); i++ {
 			typeStrings[i] = req.PromptType
@@ -117,6 +126,9 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	response := FormResponse{
 		Answer: fmt.Sprintf("Библиографические ссылки:\n%s", responseStrings),
 	}
+
+	// fmt.Println("-----------Format results--------------")
+	// fmt.Println(response.Answer)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
@@ -136,11 +148,41 @@ func splitUserInputText(userInputText string) ([]string, error) {
 		}
 	}
 
-	if err := utils.FormatLinksIsValid(formatLinks); err != nil {
-		return nil, fmt.Errorf("%w:%w", utils.ErrInputTooLong, err)
-	}
+	// if err := utils.FormatLinksIsValid(formatLinks); err != nil {
+	// 	return nil, fmt.Errorf("%w:%w", utils.ErrInputTooLong, err)
+	// }
 
 	return resultLinks, nil
+}
+
+func ChunkStrings(arr []string, n int) [][]string {
+	// Проверка граничных случаев
+	if n <= 0 {
+		return [][]string{}
+	}
+
+	if len(arr) == 0 {
+		return [][]string{}
+	}
+
+	if n >= len(arr) {
+		return [][]string{append([]string{}, arr...)}
+	}
+
+	var result [][]string
+	for i := 0; i < len(arr); i += n {
+		end := i + n
+		if end > len(arr) {
+			end = len(arr)
+		}
+
+		// Создаем копию чанка, чтобы избежать изменений исходного массива
+		chunk := make([]string, end-i)
+		copy(chunk, arr[i:end])
+		result = append(result, chunk)
+	}
+
+	return result
 }
 
 func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {
@@ -324,6 +366,8 @@ func buildTypePrompt(unformedLinks []string) (string, string) {
 
 func (s *Service) SendMultipleRequest(unformedLinks []string, types []string) (string, error) {
 	result := ""
+	fmt.Println("unformed links and types length")
+	fmt.Println(len(unformedLinks), len(types))
 	for i, link := range unformedLinks {
 		req := FormRequest{
 			UserRequest: link,
