@@ -4,12 +4,14 @@ import (
 	"bibliographic_litriture_gigachat/utils"
 	"encoding/json"
 	"fmt"
-	"log"
+
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/evgensoft/gigachat"
 )
@@ -38,16 +40,18 @@ func New(cl *gigachat.Client) *Service {
 func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 	var req FormRequest
 
+	logger := log.Ctx(r.Context())
+
 	// Парсим входной JSON
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
-		log.Println(err)
+		logger.Error().Msg(fmt.Sprint(err))
 		return
 	}
 
 	incomingData := req.UserRequest
 	if err := utils.FormatInputIsValid(incomingData); err != nil {
-		log.Printf("utils.FormatInputIsValid: %v", err)
+		logger.Error().Msg(fmt.Sprintf("utils.FormatInputIsValid: %v", err))
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
 		return
 	}
@@ -55,7 +59,7 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 	response, err := s.SendRequest(req)
 	if err != nil {
 		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
+		logger.Error().Msg(fmt.Sprintf("gptServerClient.SendRequest: %v", err))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -64,26 +68,33 @@ func (s *Service) HandleForm(w http.ResponseWriter, r *http.Request) {
 
 func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	var req FormRequest
-	log.Println("err")
+
+	logger := log.Ctx(r.Context())
+
+	logger.Error().Msg(fmt.Sprint("11111111"))
 
 	// Парсим входной JSON
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
-		log.Println(err)
+		logger.Error().Msg(fmt.Sprint(err))
 		return
 	}
+
+	logger.Error().Msg(fmt.Sprint("2222222"))
 
 	incomingData := req.UserRequest
 
 	if err := utils.FormatInputIsValid(incomingData); err != nil {
-		log.Printf("utils.FormatInputIsValid: %v", err)
+		logger.Error().Msg(fmt.Sprintf("utils.FormatInputIsValid: %v", err))
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
 		return
 	}
 
+	logger.Error().Msg(fmt.Sprint("33333333"))
+
 	unformedLinks, err := splitUserInputText(incomingData)
 	if err != nil {
-		log.Printf("utils.FormatInputIsValid: %v", err)
+		logger.Error().Msg(fmt.Sprintf("utils.FormatInputIsValid: %v", err))
 		http.Error(w, "Слишком длинный запрос", http.StatusBadRequest)
 		return
 	}
@@ -94,34 +105,45 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	// `Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	// }
 
+	logger.Error().Msg(fmt.Sprint("4444444"))
+
 	typeStrings := make([]string, 0)
 
 	chunkLinks := ChunkStrings(unformedLinks, chunkSize)
 
+	logger.Error().Msg(fmt.Sprint("555555555"))
+
 	if req.PromptType == "" {
 
+		logger.Error().Msg(fmt.Sprint("aaaaaaaaa555555555"))
 		for _, chunk := range chunkLinks {
 			temp, err := s.IdentifyTypes(chunk)
 			if err != nil {
 				http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-				log.Println(fmt.Errorf("gptServerClient.IdentifyTypes: %w", err))
+				logger.Error().Msg(fmt.Sprintf("gptServerClient.IdentifyTypes: %v", err))
 				return
 			}
 			typeStrings = append(typeStrings, temp...)
 		}
 
 	} else {
+		logger.Error().Msg(fmt.Sprint("bbbbbb555555555"))
+
 		for i := 0; i < len(unformedLinks); i++ {
-			typeStrings[i] = req.PromptType
+			typeStrings = append(typeStrings, req.PromptType)
 		}
 	}
+
+	logger.Error().Msg(fmt.Sprint("66666666666"))
 
 	responseStrings, err := s.SendMultipleRequest(unformedLinks, typeStrings)
 	if err != nil {
 		http.Error(w, "Не удалось выполнить запрос", http.StatusInternalServerError)
-		log.Println(fmt.Errorf("gptServerClient.SendMultipleRequest: %w", err))
+		logger.Error().Msg(fmt.Sprintf("gptServerClient.SendMultipleRequest: %v", err))
 		return
 	}
+
+	logger.Error().Msg(fmt.Sprint("7777777777"))
 
 	response := FormResponse{
 		Answer: fmt.Sprintf("Библиографические ссылки:\n%s", responseStrings),
@@ -295,7 +317,6 @@ func (s *Service) IdentifyTypes(unformedLinks []string) ([]string, error) {
 	directive, userMessage := buildTypePrompt(unformedLinks)
 	types, err := s.SendPromptRequest(directive, userMessage)
 	if err != nil {
-		log.Println(fmt.Errorf("gptServerClient.SendRequest: %w", err))
 		return nil, err
 	}
 	return types, nil

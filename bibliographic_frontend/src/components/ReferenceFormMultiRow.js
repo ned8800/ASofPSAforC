@@ -1,3 +1,4 @@
+// src/components/ReferenceFormMultiRow.js
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -120,7 +121,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
   return (
     <Container maxWidth="sm" sx={{ mt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="h4" gutterBottom align="center">
-        Оформление списка источников
+        Оформление ссылок на источники информации
       </Typography>
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start", mb: 2 }}>

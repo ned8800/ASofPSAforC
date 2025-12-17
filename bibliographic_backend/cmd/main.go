@@ -28,15 +28,17 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	query := params.Get("query")
 
+	logger := log.Ctx(r.Context())
+
 	if err := utils.SearchInputIsValid(query); err != nil {
-		log.Printf("utils.SearchInputIsValid: %v", err)
+		logger.Printf("utils.SearchInputIsValid error: %v", err)
 		http.Error(w, "Недостаточно данных для поиска", http.StatusBadRequest)
 		return
 	}
 
-	articles, err := search.Search(query)
+	articles, err := search.Search(query, r)
 	if err != nil {
-		log.Printf("Ошибка при выполнении запроса: %v \n", err)
+		logger.Printf("Ошибка при выполнении запроса error: %v \n", err)
 		http.Error(w, "Не удалось выполнить поиск", http.StatusBadRequest)
 		return
 	}
@@ -86,9 +88,9 @@ func main() {
 	r.Use(middleware.PreventPanicMiddleware)
 	r.Use(middleware.MiddlewareCors)
 
-	r.HandleFunc("/request", gigaChatService.HandleForm).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/search_elibrary", handleElibrarySearch).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/requestMultyRow", gigaChatService.HandleFormMultyRow).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/api/request", gigaChatService.HandleForm).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/api/search_elibrary", handleElibrarySearch).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/requestMultyRow", gigaChatService.HandleFormMultyRow).Methods(http.MethodPost, http.MethodOptions)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Address, cfg.Server.Port),

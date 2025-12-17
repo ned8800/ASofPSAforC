@@ -58,7 +58,7 @@ function ArticleSearch() {
 
   // ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ФЛАЖКА
   const handleToggle = (link, title) => (e) => {
-    const key = link + title; 
+    const key = title + link; 
     const newSelected = new Set(selectedArticles); 
     
     if (e.target.checked) {
@@ -80,16 +80,16 @@ function ArticleSearch() {
     setLoading(true);
     setError("");
     const links = [...selectedArticles]
-              .map((item, index) => `${index + 1}) ${item}`)
-              .join(';\n ');
+              .map((item, index) => `${item}`)
+              .join('\n ');
+
+    const payload = {
+      user_request: links, 
+      prompt_type: "Статья из журнала", // ищем именно в elibrary, поэтому тип определен заранее
+      example_record: null,
+    };
 
     try {
-      const payload = {
-        user_request: links, 
-        prompt_type: "Статья из журнала", // ищем именно в elibrary, поэтому тип определен заранее
-        example_record: null,
-      };
-
       const res = await fetch(`${REF_FORM_MULTYROW_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -178,7 +178,7 @@ function ArticleSearch() {
 
           <List>
             {articles.map((article) => {
-              const checkboxKey = article.link + article.title; 
+              const checkboxKey = article.title + article.link; 
               
               return (
                 <ListItem 

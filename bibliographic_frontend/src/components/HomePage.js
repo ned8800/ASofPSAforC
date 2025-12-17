@@ -14,7 +14,7 @@ function HomePage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
       <Typography variant="h4" gutterBottom align="center">
-        LibSource - генератор списка источников
+        LibSource - система создания библиографических ссылок на источники информации
       </Typography>
       
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
@@ -23,7 +23,7 @@ function HomePage() {
           size="large"
           onClick={() => navigate("/reference-form-multi-row")}
         >
-          Оформить свой список
+          Оформить ссылки
         </Button>
 
         <Button 

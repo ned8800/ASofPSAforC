@@ -130,7 +130,7 @@ func (b *TelegramBot) handleSearchCommand(query string) (string, error) {
 		return "Пожалуйста, укажите запрос для поиска\nПример: /search искусственный интеллект", nil
 	}
 
-	references, err := search.Search(query)
+	references, err := search.Search(query, nil)
 	if err != nil {
 		return "", fmt.Errorf("search.Search: %w", err)
 	}
@@ -171,7 +171,7 @@ func (b *TelegramBot) handleTextMessage(msg *tgbotapi.Message) (string, error) {
 		return "Пожалуйста, введите запрос для поиска литературы", nil
 	}
 
-	references, err := search.Search(text)
+	references, err := search.Search(text, nil)
 	if err != nil {
 		return "", fmt.Errorf("search.Search: %w", err)
 	}

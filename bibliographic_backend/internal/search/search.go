@@ -5,18 +5,21 @@ import (
 
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 
 	"golang.org/x/net/html"
 )
 
 const MaxIDsToProcess = 7
 
-func Search(title string) (map[string]string, error) {
+func Search(title string, r *http.Request) (map[string]string, error) {
+
+	logger := log.Ctx(r.Context())
 
 	queryParams := url.Values{}
 	queryParams.Set("where_fulltext", "on")
@@ -77,13 +80,13 @@ func Search(title string) (map[string]string, error) {
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Printf("Ошибка при выполнении запроса: %v \n", err)
+		logger.Error().Msg(fmt.Sprintf("Ошибка при выполнении запроса error: %v \n", err))
 		return nil, err
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Ошибка чтения ответа: %v\n", err)
+		logger.Error().Msg(fmt.Sprintf("Ошибка чтения ответа error: %v\n", err))
 		return nil, err
 	}
 
@@ -91,7 +94,7 @@ func Search(title string) (map[string]string, error) {
 
 	ids, err := extractIDs(htmlContent)
 	if err != nil {
-		log.Printf("Ошибка извлечения id: %v\n", err)
+		logger.Error().Msg(fmt.Sprintf("Ошибка извлечения id error: %v\n", err))
 		return nil, err
 	}
 
