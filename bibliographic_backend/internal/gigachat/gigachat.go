@@ -71,16 +71,12 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.Ctx(r.Context())
 
-	logger.Error().Msg(fmt.Sprint("11111111"))
-
 	// Парсим входной JSON
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid JSON", http.StatusBadRequest)
 		logger.Error().Msg(fmt.Sprint(err))
 		return
 	}
-
-	logger.Error().Msg(fmt.Sprint("2222222"))
 
 	incomingData := req.UserRequest
 
@@ -89,8 +85,6 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Недостаточно данных", http.StatusBadRequest)
 		return
 	}
-
-	logger.Error().Msg(fmt.Sprint("33333333"))
 
 	unformedLinks, err := splitUserInputText(incomingData)
 	if err != nil {
@@ -105,17 +99,11 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 	// `Бэрри У. Бём, TRW Defense Systems Group. Спиральная модель разработки и сопровождения программного обеспечения. – IEEE Computer Society Publications, 1986. – 26 с.`,
 	// }
 
-	logger.Error().Msg(fmt.Sprint("4444444"))
-
 	typeStrings := make([]string, 0)
 
 	chunkLinks := ChunkStrings(unformedLinks, chunkSize)
 
-	logger.Error().Msg(fmt.Sprint("555555555"))
-
 	if req.PromptType == "" {
-
-		logger.Error().Msg(fmt.Sprint("aaaaaaaaa555555555"))
 		for _, chunk := range chunkLinks {
 			temp, err := s.IdentifyTypes(chunk)
 			if err != nil {
@@ -127,14 +115,10 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		logger.Error().Msg(fmt.Sprint("bbbbbb555555555"))
-
 		for i := 0; i < len(unformedLinks); i++ {
 			typeStrings = append(typeStrings, req.PromptType)
 		}
 	}
-
-	logger.Error().Msg(fmt.Sprint("66666666666"))
 
 	responseStrings, err := s.SendMultipleRequest(unformedLinks, typeStrings)
 	if err != nil {
@@ -142,8 +126,6 @@ func (s *Service) HandleFormMultyRow(w http.ResponseWriter, r *http.Request) {
 		logger.Error().Msg(fmt.Sprintf("gptServerClient.SendMultipleRequest: %v", err))
 		return
 	}
-
-	logger.Error().Msg(fmt.Sprint("7777777777"))
 
 	response := FormResponse{
 		Answer: fmt.Sprintf("Библиографические ссылки:\n%s", responseStrings),
