@@ -5,6 +5,7 @@ import ReferenceForm from "./components/ReferenceForm";
 import ArticleSearch from "./components/ArticleSearch";
 import HomePage from "./components/HomePage";
 import ReferenceFormMultiRow from "./components/ReferenceFormMultiRow";
+import './App.css';
 
 function ReferenceFormAnswerWrapper() {
   const location = useLocation();

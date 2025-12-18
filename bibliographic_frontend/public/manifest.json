@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "libsource",
+  "name": "libsource - a website for creating links to information sources",
   "icons": [
     {
       "src": "favicon.ico",

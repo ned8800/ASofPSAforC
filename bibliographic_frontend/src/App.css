@@ -100,3 +100,8 @@
   resize: vertical;
   box-sizing: border-box;
 }
+
+.description_block-link {
+  color: inherit;
+  text-decoration: inherit;
+}
