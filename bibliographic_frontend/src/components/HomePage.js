@@ -1,8 +1,5 @@
-// src/components/HomePage.js
 import { Container, Button, Box, Typography, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-// Импортируем иконки для кнопок (для наглядности)
 import SearchIcon from '@mui/icons-material/Search';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -14,7 +11,7 @@ function HomePage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
       <Typography variant="h4" gutterBottom align="center"  fontWeight="bold">
-        Libsource — ваш надёжный помощник по оформлению источников информации
+        Libsource — ваш надёжный помощник по оформлению ссылок на источники информации онлайн
       </Typography>
       
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
@@ -33,9 +30,9 @@ function HomePage() {
           sx={{
             borderWidth: 2,
             borderStyle: 'solid',
-            backgroundColor: '#e0e0e0', // устанавливаем фоновое оформление
-            ':hover': {               // применяем эффекты при наведении
-              backgroundColor: '#ddd5d5ff', // цвет фона при наведении
+            backgroundColor: '#e0e0e0',
+            ':hover': {
+              backgroundColor: '#ddd5d5ff',
             },
           }}
         >
@@ -43,12 +40,12 @@ function HomePage() {
         </Button>
       </Box>
 
-      {/* БЛОК СТИЛИЗОВАННОЙ СПРАВКИ */}
+      {/* БЛОК СПРАВКИ */}
       <Box
         sx={{
           p: 4,
           borderRadius: 3,
-          boxShadow: 6, // Более выраженная тень
+          boxShadow: 6,
           backgroundColor: '#ffffff',
           border: '2px solid #e0e0e0',
           mb: 4,
@@ -85,7 +82,7 @@ function HomePage() {
           </Typography>
           </a>
           <Typography variant="body2">
-              Выбарите эту опцию, если у вас уже есть информация об источнике, но нужно превратить её в готовую библиографическую ссылку на литературу по всем правилам. Введите данные, следуйте подсказкам и получите идеально оформленные ссылки по ГОСТу.
+              Выберите эту опцию, если у вас уже есть информация об источнике, но нужно превратить её в готовую библиографическую ссылку на литературу по всем правилам. Введите данные, следуйте подсказкам и получите идеально оформленные ссылки по ГОСТу.
           </Typography>
         </Box>
 
@@ -99,13 +96,13 @@ function HomePage() {
             </Typography>
             </a>
             <Typography variant="body2">
-                Выбарите эту опцию, если вам нужно найти научные статьи по интересующей теме. Вы получите быстрый доступ к каталогу статей из крупнейшей российской научной библиотеки e-library. Идеально для сбора актуальной базы источников.
+                Выберите эту опцию, если вам нужно найти научные статьи по интересующей теме. Вы получите быстрый доступ к каталогу статей из крупнейшей российской научной библиотеки e-library. Идеально для сбора актуальной базы источников.
             </Typography>
           </Box>
 
         </Box>
       </Box>
-      {/* КОНЕЦ НОВОГО БЛОКА */}
+      {/* КОНЕЦ БЛОКА СПРАВКИ */}
 
     </Container>
   );
