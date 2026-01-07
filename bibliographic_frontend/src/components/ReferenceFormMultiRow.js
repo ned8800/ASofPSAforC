@@ -1,5 +1,4 @@
-// src/components/ReferenceFormMultiRow.js
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -17,17 +16,34 @@ import {
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom";
-import { REF_FORM_MULTYROW_URL } from '../consts';
+import {
+  REF_FORM_MULTYROW_URL,
+  bibl_type_book,
+  bibl_type_internet_resourse,
+  bibl_type_law,
+  bibl_type_dissertation,
+  bibl_type_autodissertation,
+  bibl_type_journal_article,
+  bibl_type_article_from_the_collection,
+  bibl_type_article_from_the_newspaper,
+  bibl_type_custom_type
+} from '../consts';
 
 const StyledTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   '& .MuiTooltip-tooltip': {
-    fontSize: '1.2rem', // Изменяем размер шрифта подсказки
+    fontSize: '1.2rem',
   },
 }));
 
-// НОВЫЙ ПЕРЕИСПОЛЬЗУЕМЫЙ КОМПОНЕНТ Tooltip
+const StyledTextField = styled(TextField)({
+  '& .MuiInputBase-input': {
+    whiteSpace: 'pre-wrap', // Устанавливаем правильное поведение переноса
+  },
+});
+
+// модифицированный для работы с мобильными устройствами компонент Tooltip
 const ClickableTooltip = ({ title, children }) => {
   const [open, setOpen] = useState(false);
 
@@ -49,8 +65,6 @@ const ClickableTooltip = ({ title, children }) => {
         open={open}
         onClose={handleClose}
         disableFocusListener
-        // disableHoverListener
-        // Добавляем click listener к корневому элементу, который будет его открывать
         onClick={handleToggle} 
         arrow
       >
@@ -70,13 +84,13 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [fieldIsInvalid, setFieldIsInvalid] = useState(false); // Состояние для красной рамки обязательного поля ввода
 
   useEffect(() => {
     if (initialAnswer) {
       setAnswer(initialAnswer);
     }
   }, [initialAnswer]); 
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,17 +149,27 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
 
       <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
-          label="Ваш список"
+          label="Информация об источнике"
           value={userRequest}
-          onChange={(e) => setUserRequest(e.target.value)}
+          onChange={(e) => {
+            e.target.setCustomValidity("");
+            setFieldIsInvalid(false);
+            setUserRequest(e.target.value);
+          }}
           required
+          onInvalid={(e) => {
+            e.target.setCustomValidity("Это поле обязательно к заполнению");
+            setFieldIsInvalid(true);
+            }
+          }
+          error={fieldIsInvalid}
           multiline
           maxRows={10}
           slotProps={{ input: {
             maxLength: 1500,
             endAdornment: (
               <InputAdornment position="end">
-                <ClickableTooltip title="Введите информацию об источнике (например: 'статья И.И. Иванова <Название> в журнале вестник науки').
+                <ClickableTooltip title="Введите информацию об источнике (например: 'И.И. Иванов <Название статьи> в журнале вестник науки').
                  Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки">
                   <IconButton edge="end">
                     <InfoOutlinedIcon />
@@ -156,12 +180,13 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           } }}
         />
         
-        <TextField
+        <StyledTextField
           select
           fullWidth
           multiline
           maxRows={10}
-          label='Выбрать тип записи (или оставить по умолчанию, тогда система сама определит тип)'
+          minRows={2}
+          label='Выбрать тип записи (или оставить по умолчанию)'
           value={promptType}
           onChange={(e) => {
             setPromptType(e.target.value);
@@ -169,56 +194,65 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
               setExampleRecord("");
             }
           }}
-          slotProps={{ input: {
-            maxLength: 50,
-            endAdornment: (
-              <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
+          slotProps={{ 
+            input: {
+              maxLength: 50,
+              endAdornment: (
+                <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton size="small" sx={{ 
+                      p: 0, 
+                      m: 0,
+                      color: 'action.active' 
+                  }}>
+                    <ArrowDropDownIcon />
+                  </IconButton>
 
-                {/* 2. Добавляем иконку стрелочки первой */}
-                <IconButton size="small" sx={{ 
-                    p: 0, 
-                    m: 0, // Отступ от иконки информации
-                    color: 'action.active' 
-                }}>
-                  <ArrowDropDownIcon />
-                </IconButton>
-
-                <ClickableTooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования. Или оставить по умолчанию, тогда система сама определит тип">
-                  <Box> 
-                    <IconButton edge="end">
-                      <InfoOutlinedIcon />
-                    </IconButton>
-                  </Box>
-                </ClickableTooltip>
-              </InputAdornment>
-            ),
-          },
+                  <ClickableTooltip title="Выберите тип источника (книга, статья и т.д.) для более точного форматирования. Или оставьте по умолчанию, тогда система сама определит тип">
+                    <Box> 
+                      <IconButton edge="end">
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Box>
+                  </ClickableTooltip>
+                </InputAdornment>
+              ),
+            },
           select: { IconComponent: () => null },
-         }}
+          }}
         >
           <MenuItem value=""><em>-- Выберите тип --</em></MenuItem>
-          <MenuItem value="Книга">Книга</MenuItem>
-          <MenuItem value="Интернет-ресурс">Интернет-ресурс</MenuItem>
-          <MenuItem value="Закон, нормативный акт и т.п.">Закон, нормативный акт и т.п.</MenuItem>
-          <MenuItem value="Диссертация">Диссертация</MenuItem>
-          <MenuItem value="Автореферат">Автореферат</MenuItem>
-          <MenuItem value="Статья из журнала">Статья из журнала</MenuItem>
-          <MenuItem value="Статья из сборника">Статья из сборника</MenuItem>
-          <MenuItem value="Статья из газеты">Статья из газеты</MenuItem>
-          <MenuItem value="Другой">Другой</MenuItem>
-        </TextField>
+          <MenuItem value={bibl_type_book} >Книга</MenuItem>
+          <MenuItem value={bibl_type_internet_resourse}>Интернет-ресурс</MenuItem>
+          <MenuItem value={bibl_type_law}>Закон, нормативный акт и т.п.</MenuItem>
+          <MenuItem value={bibl_type_dissertation}>Диссертация</MenuItem>
+          <MenuItem value={bibl_type_autodissertation}>Автореферат</MenuItem>
+          <MenuItem value={bibl_type_journal_article}>Статья из журнала</MenuItem>
+          <MenuItem value={bibl_type_article_from_the_collection}>Статья из сборника</MenuItem>
+          <MenuItem value={bibl_type_article_from_the_newspaper}>Статья из газеты</MenuItem>
+          <MenuItem value={bibl_type_custom_type}>Другой (вставить пример нестандартного оформления)</MenuItem>
+        </StyledTextField>
 
-        {promptType === "Другой" && (
+        {promptType === bibl_type_custom_type && (
           <TextField
             required
-            label="Указать определенный формат записи (или оставить пустым по умолчанию)"
+            label="Вставить пример нестандартного оформления"
             value={exampleRecord}
-            onChange={(e) => setExampleRecord(e.target.value)}
+            onChange={(e) => {
+              e.target.setCustomValidity("");
+              setFieldIsInvalid(false);
+              setExampleRecord(e.target.value)
+            }}
+            onInvalid={(e) => {
+              e.target.setCustomValidity("Это поле обязательно к заполнению");
+              setFieldIsInvalid(true);
+              }
+            }
+            error={fieldIsInvalid}
             slotProps={{ input: {
               maxLength: 200,
               endAdornment: (
                 <InputAdornment position="end">
-                  <ClickableTooltip title="Если вам нужен конкретный ГОСТ или стиль (например, 'ГОСТ Р 7.0.5-2008' или 'APA'), укажите его здесь.">
+                  <ClickableTooltip title="Если вам нужен специфический стиль оформления, укажите его в этом поле ввода: вставьте сюда пример правильно оформленной записи">
                     <IconButton edge="end">
                       <InfoOutlinedIcon />
                     </IconButton>
@@ -265,7 +299,7 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
         />
       )}
 
-      {/* НОВЫЙ БЛОК СПРАВКИ */}
+      {/* БЛОК СПРАВКИ */}
       <Box sx={{ 
           width: "100%", 
           p: 2, 
@@ -279,20 +313,25 @@ function ReferenceFormMultiRow({ initialAnswer = "" }) {
           Краткая справка
         </Typography>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          Этот инструмент предназначен для автоматизированного создания библиографических ссылок на источники из запроса пользователя в соответствии со стандартами (например, ГОСТ). Он позволяет обрабатывать несколько источников одновременно, создавая каждую ссылку с новой строки.
+          Этот инструмент предназначен для автоматизированного создания библиографических ссылок на источники информации из запроса пользователя в соответствии с ГОСТ.
+          Он позволяет создавать несколько источников за раз: информация о каждом новом источнике должна начинаться с новой строки в одноименном поле ввода.
         </Typography>
         <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 1 }}>
           Как пользоваться:
         </Typography>
         <Box component="ul" sx={{ mt: 0, pl: 2, '& li': { mb: 0.5 } }}>
-            <Typography component="li" variant="body2">Введите данные в поле "Ваш список": введите неоформленный список, содержащий информацию об источнике, например:
-              'статья И.И. Иванова Распространение папоротников в журнале вестник науки, URL=example.com/...'.
-               Каждая отдельная библиографическая ссылка должна разделяться знаком новой строки. </Typography>
-            <Typography component="li" variant="body2">Выберите тип источника (опционально) для большей точности. Или оставьте по умолчанию, тогда система сама определит тип</Typography>
+            <Typography component="li" variant="body2">Введите данные в поле "Информация об источнике": введите информацию об источнике (можно без оформления), например:
+              <i>"И.И. Иванов Распространение папоротников журнал вестник науки example.com"</i>. Информация об источнике должна быть записана строго в одну строку.
+               Новые данные для создания очередной отдельной библиографической ссылки должны разделяться знаком новой строки. </Typography>
+            <Typography component="li" variant="body2">Выберите тип источника по ГОСТ (опционально) для большей точности. Или оставьте по умолчанию, тогда система сама определит тип источника информации</Typography>
+            <Typography component="li" variant="body2">Если вам нужно получить нестандартное оформление ссылки на источник литературы, то: выберите тип записи "другой", затем в появившееся поле ввода вставьте пример того,
+               как должна быть оформлена ссылка на литературу (нужно вставить вместе со всеми нужными знаками препинания и разделения).
+               <br /> Например вставить в появившееся поле "Вставить пример нестандартного оформления" текст: <i>"Иванов И.И., Карпатов К.К. Параметризация модели продукционного процесса для экосистем // Мат. биология и биоинформатика. 2019. Т. 14. Вып. 1. С. 54–76."</i>. </Typography>
+
             <Typography component="li" variant="body2">Нажмите "Оформить" и получите готовые ссылки на источники литературы. Ссылки на источники можно сразу скопировать прямо в вашу работу, ничего дополнительно форматировать не нужно!</Typography>
         </Box>
       </Box>
-      {/* КОНЕЦ НОВОГО БЛОКА */}
+      {/* КОНЕЦ БЛОКА СПРАВКИ */}
 
     </Container>
   );

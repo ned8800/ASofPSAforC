@@ -1,5 +1,4 @@
-// src/components/ArticleSearch.js
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Typography,
@@ -22,6 +21,7 @@ function ArticleSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [fieldIsInvalid, setFieldIsInvalid] = useState(false); // Состояние для красной рамки обязательного поля ввода
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -41,7 +41,6 @@ function ArticleSearch() {
       }
 
       const data = await res.json();
-
       if (data) {
         setArticles(data);
       } else {
@@ -56,7 +55,7 @@ function ArticleSearch() {
     }
   };
 
-  // ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ФЛАЖКА
+  // функция переключения флажка
   const handleToggle = (link, title) => (e) => {
     const key = title + link; 
     const newSelected = new Set(selectedArticles); 
@@ -136,9 +135,20 @@ function ArticleSearch() {
         <TextField
           label="Введите ключевые слова для поиска"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
           fullWidth
           required
+          multiline
+          onChange={(e) => {
+            e.target.setCustomValidity("");
+            setFieldIsInvalid(false);
+            setSearchTerm(e.target.value)
+          }}
+          onInvalid={(e) => {
+            e.target.setCustomValidity("Это поле обязательно к заполнению");
+            setFieldIsInvalid(true);
+            }
+          }
+          error={fieldIsInvalid}
         />
         <Button type="submit" variant="contained" disabled={loading}>
           Поиск
@@ -147,7 +157,6 @@ function ArticleSearch() {
 
       {articles.length > 0 && (
         <>
-
           <Button
             variant="contained"
             size="large"
@@ -179,7 +188,6 @@ function ArticleSearch() {
           <List>
             {articles.map((article) => {
               const checkboxKey = article.title + article.link; 
-              
               return (
                 <ListItem 
                   key={article.link} 
@@ -197,35 +205,31 @@ function ArticleSearch() {
                         marginRight: '16px'
                       }}
                   />
-                  
                   <ListItemText
                       primary={article.title}
                       secondary={
-                          <Link href={article.link} target="_blank" rel="noopener" variant="body2">
-                              {article.link}
-                          </Link>
+                        <Link href={article.link} target="_blank" rel="noopener" variant="body2">
+                            {article.link}
+                        </Link>
                       }
                   />
                 </ListItem>
               )
             })}
           </List>
-          
-          
-
-           <Button 
-                variant="outlined" 
-                fullWidth
-                onClick={() => navigate("/reference-form-multi-row")}
-                sx={{
-                  borderWidth: 2,
-                  borderStyle: 'solid',
-                  backgroundColor: '#e0e0e0',
-                  ':hover': {
-                    backgroundColor: '#ddd5d5ff',
-                  },
-                }}
-            >
+          <Button 
+            variant="outlined" 
+            fullWidth
+            onClick={() => navigate("/reference-form-multi-row")}
+            sx={{
+              borderWidth: 2,
+              borderStyle: 'solid',
+              backgroundColor: '#e0e0e0',
+              ':hover': {
+                backgroundColor: '#ddd5d5ff',
+              },
+            }}
+          >
                 Вернуться к форме (отмена выбора)
            </Button>
         </>
