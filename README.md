@@ -10,7 +10,7 @@
   <br />
 
   <!-- Badges -->
-  <a href="https://frontend-jws9.onrender.com/"><img alt="Live Demo" src="https://img.shields.io/badge/ПОПРОБОВАТЬ_ДЕМО-САЙТ-brightgreen?style=for-the-badge&logo=render"></a>
+  <a href="https://libsource.online/"><img alt="Live Demo" src="https://img.shields.io/badge/ПОПРОБОВАТЬ_ДЕМО-САЙТ-brightgreen?style=for-the-badge&logo=render"></a>
   <a href="https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/YOUR_REPOSITORY/main.yml?style=for-the-badge&logo=githubactions&label=CI%2FCD"></a>
   <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/Лицензия-MIT-yellow.svg?style=for-the-badge"></a>
 
