@@ -118,7 +118,7 @@ func Search(title string, r *http.Request) (map[string]string, error) {
 	client.Jar.SetCookies(&url.URL{Scheme: "https", Host: "https://elibrary.ru"}, nil) // Сбрасываем cookie
 	client.CloseIdleConnections()
 
-	return references, nil
+	return references, nil //тут все находит штатно
 }
 
 func ExtractSpanTexts(htmlContent string) ([]string, error) {

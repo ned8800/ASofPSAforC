@@ -36,7 +36,7 @@ func handleElibrarySearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	articles, err := search.Search(query, r)
+	articles, err := search.Search(query, r) // все получено штатно
 	if err != nil {
 		logger.Printf("Ошибка при выполнении запроса error: %v \n", err)
 		http.Error(w, "Не удалось выполнить поиск", http.StatusBadRequest)
