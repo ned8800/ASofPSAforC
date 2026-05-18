@@ -234,15 +234,31 @@ func (s *Service) SendRequest(req FormRequest) (FormResponse, error) {
 	// correct En Dash as in GOST
 	response.Answer = strings.ReplaceAll(response.Answer, "\u2014", "\u2013")
 
-	// correct URL as in GOST
-	if !strings.Contains(response.Answer, "[Электронный ресурс] \u2013 URL:") {
-		response.Answer = strings.ReplaceAll(response.Answer, "URL:", "[Электронный ресурс] \u2013 URL:")
+	// correct URL as in GOST 2022
+	if strings.Contains(response.Answer, "[Электронный ресурс] \u2013 ") {
+		response.Answer = strings.ReplaceAll(response.Answer, "[Электронный ресурс] \u2013 ", "")
 	}
+
+	response.Answer = fixPagesDelimeter(response.Answer)
 
 	response.Answer = formatDateReference(response.Answer)
 	// response.Answer = "Исследование механизма балансировки нагрузки многосерверной сетевой системы на основе теории Марковских процессов / Т. Н. Моисеев, О. Я. Кравец // Информационные технологии моделирования и управления. – 2005."
 
 	return response, nil
+}
+
+func fixPagesDelimeter(inString string) string {
+	// \x{2013} — шестнадцатеричный код символа юникода –
+	reFixPagesDelimeter1 := regexp.MustCompile(`(\d+)\x{2013}(\d+)`)
+	// $1 и $2 — это группы захвата (цифры до и после символа)
+	inString = reFixPagesDelimeter1.ReplaceAllString(inString, "$1-$2")
+
+	// \x{2014} — шестнадцатеричный код символа юникода —
+	reFixPagesDelimeter2 := regexp.MustCompile(`(\d+)\x{2014}(\d+)`)
+	// $1 и $2 — это группы захвата (цифры до и после символа)
+	inString = reFixPagesDelimeter2.ReplaceAllString(inString, "$1-$2")
+
+	return inString
 }
 
 // Форматируем дату обращения, добавляя круглые скобки,

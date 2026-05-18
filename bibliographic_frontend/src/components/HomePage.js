@@ -104,6 +104,9 @@ function HomePage() {
       </Box>
       {/* КОНЕЦ БЛОКА СПРАВКИ */}
 
+
+      <a href="https://freedns.afraid.org/"> Free DNS </a>
+
     </Container>
   );
 }
